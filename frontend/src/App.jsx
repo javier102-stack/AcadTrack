@@ -9,6 +9,7 @@ import CalendarView from './components/CalendarView';
 import StudyView from './components/StudyView';
 import { AddTaskModal, EditTaskModal, DeleteModal } from './components/TaskModals';
 import Login from './Login';
+import AIAssistant from './components/AIAssistant';
 
 const API_URL = 'http://localhost:5000/api/tasks';
 const AUTH_URL = 'http://localhost:5000/api/auth';
@@ -61,6 +62,7 @@ function App() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState(null);
   const [toastMessage, setToastMessage] = useState(null);
+  const [isAIChatOpen, setIsAIChatOpen] = useState(false);
 
   const formattedCurrentDate = new Date().toLocaleDateString('en-US', {
     weekday: 'short', month: 'short', day: 'numeric', year: 'numeric'
@@ -392,6 +394,14 @@ if (!user) {
               />
             )}
 
+            {activeTab === 'ai' && (
+              <AIAssistant
+                theme={theme}
+                darkMode={darkMode}
+                tasks={tasks}
+              />
+            )}
+
           </div>
         </div>
       </main>
@@ -412,6 +422,59 @@ if (!user) {
         isDeleting={isDeleting} setIsDeleting={setIsDeleting} taskToDelete={taskToDelete}
         confirmDeleteTask={confirmDeleteTask} theme={theme}
       />
+
+       <button
+        type="button"
+        onClick={() => setIsAIChatOpen((open) => !open)}
+        aria-label={isAIChatOpen ? 'Close AI assistant' : 'Open AI assistant'}
+        title="AcadTrack AI"
+        style={{
+          position: 'fixed',
+          right: '24px',
+          bottom: '24px',
+          width: '60px',
+          height: '60px',
+          borderRadius: '50%',
+          border: 'none',
+          background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
+          color: '#fff',
+          fontSize: '28px',
+          cursor: 'pointer',
+          boxShadow: '0 8px 24px rgba(37, 99, 235, 0.35)',
+          zIndex: 3000,
+        }}
+      >
+        {isAIChatOpen ? '×' : '✦'}
+      </button>
+
+      {/* Floating AcadTrack AI chat panel */}
+      {isAIChatOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            right: '24px',
+            bottom: '96px',
+            width: 'min(420px, calc(100vw - 32px))',
+            height: 'min(620px, calc(100vh - 130px))',
+            background: theme.cardBg,
+            color: theme.text,
+            border: `1px solid ${theme.border}`,
+            borderRadius: '18px',
+            boxShadow: '0 12px 40px rgba(0, 0, 0, 0.2)',
+            overflowY: 'auto',
+            padding: '16px',
+            zIndex: 2999,
+            boxSizing: 'border-box',
+          }}
+        >
+          <AIAssistant
+            theme={theme}
+            darkMode={darkMode}
+            tasks={tasks}
+          />
+        </div>
+      )}
+
     </div>
   );
 }

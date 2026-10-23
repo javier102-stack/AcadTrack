@@ -254,7 +254,7 @@ async function handleChangePassword(event) {
       >
         {[
           { id: "dashboard", label: "Dashboard", Icon: LayoutDashboard },
-          { id: "academics", label: "Academics & Tasks", Icon: CheckSquare },
+          { id: "academics", label: "To-dos", Icon: CheckSquare },
           { id: "calendar", label: "Calendar", Icon: CalendarIcon },
           { id: "study", label: "Focus Mode", Icon: Timer },
         ].map(({ id, label, Icon }) => (
