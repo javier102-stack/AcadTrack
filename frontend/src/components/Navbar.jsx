@@ -2,7 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { 
   LayoutDashboard, CheckSquare, Calendar as CalendarIcon, Timer, 
   PlusCircle, Sun, Moon, BookOpen, Bell, AlertCircle, Clock, 
-  CheckCircle2, UserRoundPen, KeyRound, Trash2, LogOut, X, Eye, EyeOff 
+  CheckCircle2, UserRoundPen, KeyRound, Trash2, LogOut, X, Eye, EyeOff, 
+  PencilIcon
 } from 'lucide-react';
 import { EditProfileModal, ChangePasswordModal, DeleteAccountModal } from './ProfileModals';
 import './Navbar.css';
@@ -214,7 +215,7 @@ export default function Navbar({
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'academics', label: 'To-dos', icon: CheckSquare },
     { id: 'calendar', label: 'Calendar', icon: CalendarIcon },
-    { id: 'study', label: 'Focus Mode', icon: Timer }
+    { id: 'notes', label: 'Note&Study', icon: PencilIcon }
   ];
 
   const modeClass = darkMode ? 'dark' : 'light';

@@ -102,7 +102,7 @@ function AIAssistant({ theme, darkMode, tasks = [] }) {
         fontFamily: 'Inter, sans-serif',
       }}
     >
-      <div style={{ marginBottom: '16px' }}>
+      <div style={{}}>
         <h2 style={{ margin: '0 0 6px', fontSize: '20px', color: colors.text }}>
           <span style={{color: colors.accent}}>✦</span> AcadTrack AI
         </h2>

@@ -10,7 +10,7 @@ export default function CalendarView({
       <div className="calendar-top-row">
         <div>
           <h2 className="calendar-title" style={{ color: theme.text }}>
-            <CalendarIcon size={22} color="#4B7B9D" /> Interactive Calendar 📅
+            <CalendarIcon size={22} color="#4B7B9D" /> Interactive Calendar
           </h2>
         </div>
       </div>

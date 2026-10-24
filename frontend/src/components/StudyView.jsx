@@ -92,7 +92,7 @@ export default function StudyView({ theme, darkMode }) {
       <div className={`study-card ${darkMode ? 'dark' : 'light'}`}>
         
         <h2 className="study-title" style={{ color: theme.text }}>
-          <TimerIcon size={24} color="#4B7B9D" /> Custom Focus Study Room ⏱️
+          <TimerIcon size={24} color="#4B7B9D" /> Custom Focus Study Room
         </h2>
 
         <div className="preset-group">

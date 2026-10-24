@@ -16,6 +16,16 @@
   background-repeat: no-repeat;
 }
 
+/* Light Mode Gradient (Soft blue to warm pastel yellow matching your logo) */
+.app-container.light-bg {
+  background: linear-gradient(135deg, #EBF4FB 0%, #A8C6E7 50%, #FFF7D6 100%);
+}
+
+/* Dark Mode Gradient (Deep slate to moody dark navy) */
+.app-container.dark-bg {
+  background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #2B3B4E 100%);
+}
+
 .app-main-content {
   flex: 1;
   display: flex;

@@ -6,7 +6,7 @@ import Navbar from './components/Navbar';
 import DashboardView from './components/DashboardView';
 import AcademicsView from './components/AcademicsView';
 import CalendarView from './components/CalendarView';
-import StudyView from './components/StudyView';
+import NoteView from './components/NoteView';
 import AIAssistant from './components/AIAssistant';
 import { AddTaskModal, EditTaskModal, DeleteModal } from './components/TaskModals';
 import Login from './Login';
@@ -368,11 +368,17 @@ function App() {
               />
             )}
 
-            {activeTab === 'study' && (
-              <StudyView 
-                customMinutesInput={customMinutesInput} setCustomTimerMinutes={setCustomTimerMinutes}
-                pomodoroSeconds={pomodoroSeconds} formatPomodoroTime={formatPomodoroTime}
-                isPomodoroActive={isPomodoroActive} setIsPomodoroActive={setIsPomodoroActive} theme={theme} darkMode={darkMode}
+            {activeTab === 'notes' && (
+              <NoteView 
+                tasks={tasks}
+                customMinutesInput={customMinutesInput} 
+                setCustomTimerMinutes={setCustomTimerMinutes}
+                pomodoroSeconds={pomodoroSeconds} 
+                formatPomodoroTime={formatPomodoroTime}
+                isPomodoroActive={isPomodoroActive} 
+                setIsPomodoroActive={setIsPomodoroActive} 
+                theme={theme} 
+                darkMode={darkMode}
               />
             )}
 

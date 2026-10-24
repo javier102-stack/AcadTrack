@@ -2,6 +2,7 @@
   const express = require("express");
   const mongoose = require("mongoose");
   const cors = require("cors");
+  const notesRouter = require('./routes/notes');  
   require("dotenv").config();
 
   const app = express();
@@ -23,6 +24,9 @@
   app.use("/api/auth", require("./routes/authRoutes"));
 
   app.use("/api/ai", require("./routes/aiRoutes"));
+
+  // Mount the notes API endpoint
+  app.use('/api/notes', notesRouter);
 
   // Test route
   app.get("/", (req, res) => {
