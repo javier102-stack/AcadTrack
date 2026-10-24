@@ -1,74 +1,99 @@
-import { AlertTriangle, Calendar as CalendarIcon, PlusCircle, FileText, Timer, ChevronRight, Award } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { AlertTriangle, Calendar as CalendarIcon, Clock, PlusCircle, FileText, Timer, ChevronRight, Sun } from 'lucide-react';
+import './DashboardView.css';
 
 export default function DashboardView({ 
   overdueCount, totalTasks, pendingTasks, examTasks, completedTasks, 
-  subjectsList, tasks, formattedCurrentDate, theme, darkMode, 
-  setIsAddTaskOpen, setWorkspaceSubView, setToDoSubFilter, setActiveTab, getSubjectColor, getPriorityColor 
+  subjectsList, tasks, formattedCurrentDate, darkMode, 
+  setIsAddTaskOpen, setToDoSubFilter, setActiveTab, getSubjectColor, getPriorityColor 
 }) {
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formattedTime = currentTime.toLocaleTimeString('en-US', {
+    hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
+  });
+
   return (
-    <div>
+    <div className="dashboard-container">
       {overdueCount > 0 && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: '#fef2f2', border: '1px solid #fecaca', color: '#991b1b', padding: '12px 18px', borderRadius: '8px', marginBottom: '20px', fontSize: '14px' }}>
-          <AlertTriangle color="#dc2626" size={20} />
+        <div className={`alert-banner ${darkMode ? 'dark' : 'light'}`}>
+          <AlertTriangle color="#DC2626" size={20} />
           <span>
             <strong>Attention Needed:</strong> You have <strong>{overdueCount} overdue</strong> requirement(s). Please review and complete them!
           </span>
         </div>
       )}
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', padding: '24px 30px', borderRadius: '12px', border: `1px solid ${theme.border}`, background: theme.cardBg }}>
-        <div>
-          <h1 style={{ margin: '0 0 5px 0', fontSize: '24px', fontWeight: 'bold', color: theme.text }}>Welcome back, Javier! 👋</h1>
-          <p style={{ margin: 0, fontSize: '14px', color: theme.subText }}>Here's what's happening with your studies today.</p>
+      {/* Main Welcome Banner */}
+      <div className="welcome-banner">
+        <div className="banner-content-left">
+          <h1 className="banner-heading">Welcome back, Javier! 👋</h1>
+          <p className="banner-sub">Stay organized and reach your academic goals today!</p>
         </div>
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#fff7ed', color: '#f97316', padding: '8px 14px', borderRadius: '20px', fontSize: '13px', fontWeight: '600', border: '1px solid #ffedd5' }}>
-            <CalendarIcon size={14} color="#f97316" /> {formattedCurrentDate}
+        
+        <div className="banner-content-right">
+          <div className="banner-time-badge">
+            <CalendarIcon size={15} color="#1E293B" /> 
+            <span>{formattedCurrentDate}</span>
+            <span className="banner-time-separator">•</span>
+            <Clock size={15} color="#1E293B" />
+            <span className="banner-clock-text">{formattedTime}</span>
           </div>
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '20px' }}>
-        <div style={{ padding: '20px 24px', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.02)', border: `1px solid ${theme.border}`, background: theme.cardBg }}>
-          <span style={{ fontSize: '13px', fontWeight: '600', color: theme.subText }}>Total Tasks</span>
-          <p style={{ fontSize: '28px', fontWeight: 'bold', margin: '8px 0 4px 0', color: '#2563eb' }}>{totalTasks}</p>
-          <small style={{ fontSize: '12px', color: theme.subText }}>{subjectsList.length} Active subjects</small>
+      {/* Stats Row */}
+      <div className="stats-grid">
+        <div className={`stat-card ${darkMode ? 'dark' : 'light'}`}>
+          <span className={`stat-label ${darkMode ? 'dark' : 'light'}`}>Total Tasks</span>
+          <p className="stat-value stat-value-total">{totalTasks}</p>
+          <small className={`stat-sub ${darkMode ? 'dark' : 'light'}`}>{subjectsList.length} Active subjects</small>
         </div>
-        <div style={{ padding: '20px 24px', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.02)', border: `1px solid ${theme.border}`, background: theme.cardBg }}>
-          <span style={{ fontSize: '13px', fontWeight: '600', color: theme.subText }}>Pending</span>
-          <p style={{ fontSize: '28px', fontWeight: 'bold', margin: '8px 0 4px 0', color: '#f59e0b' }}>{pendingTasks}</p>
-          <small style={{ fontSize: '12px', color: theme.subText }}>Needs attention</small>
+        <div className={`stat-card ${darkMode ? 'dark' : 'light'}`}>
+          <span className={`stat-label ${darkMode ? 'dark' : 'light'}`}>Pending</span>
+          <p className="stat-value stat-value-pending">{pendingTasks}</p>
+          <small className={`stat-sub ${darkMode ? 'dark' : 'light'}`}>Needs attention</small>
         </div>
-        <div style={{ padding: '20px 24px', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.02)', border: `1px solid ${theme.border}`, background: theme.cardBg }}>
-          <span style={{ fontSize: '13px', fontWeight: '600', color: theme.subText }}>Exams & Quizzes</span>
-          <p style={{ fontSize: '28px', fontWeight: 'bold', margin: '8px 0 4px 0', color: '#ef4444' }}>{examTasks}</p>
-          <small style={{ fontSize: '12px', color: theme.subText }}>Major tests scheduled</small>
+        <div className={`stat-card ${darkMode ? 'dark' : 'light'}`}>
+          <span className={`stat-label ${darkMode ? 'dark' : 'light'}`}>Exams & Quizzes</span>
+          <p className="stat-value stat-value-exam">{examTasks}</p>
+          <small className={`stat-sub ${darkMode ? 'dark' : 'light'}`}>Major tests scheduled</small>
         </div>
-        <div style={{ padding: '20px 24px', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.02)', border: `1px solid ${theme.border}`, background: theme.cardBg }}>
-          <span style={{ fontSize: '13px', fontWeight: '600', color: theme.subText }}>Completed</span>
-          <p style={{ fontSize: '28px', fontWeight: 'bold', margin: '8px 0 4px 0', color: '#10b981' }}>{completedTasks}</p>
-          <small style={{ fontSize: '12px', color: theme.subText }}>Finished assignments</small>
+        <div className={`stat-card ${darkMode ? 'dark' : 'light'}`}>
+          <span className={`stat-label ${darkMode ? 'dark' : 'light'}`}>Completed</span>
+          <p className="stat-value stat-value-completed">{completedTasks}</p>
+          <small className={`stat-sub ${darkMode ? 'dark' : 'light'}`}>Finished assignments</small>
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '3fr 2fr', gap: '20px' }}>
-        <div style={{ padding: '24px', borderRadius: '12px', border: `1px solid ${theme.border}`, background: theme.cardBg }}>
-          <h3 style={{ fontSize: '16px', fontWeight: 'bold', marginTop: 0, marginBottom: '16px', color: theme.text }}>Recent Tasks Preview</h3>
+      {/* Main Grid Section */}
+      <div className="dashboard-main-grid">
+        
+        {/* Left Column: Recent Tasks */}
+        <div className={`recent-tasks-card ${darkMode ? 'dark' : 'light'}`}>
+          <h3 className={`card-title ${darkMode ? 'dark' : 'light'}`}>Recent Tasks Preview</h3>
           {tasks.length === 0 ? (
-            <p style={{ margin: 0, fontSize: '14px', color: theme.subText }}>No active tasks found.</p>
+            <p className={`empty-task-text ${darkMode ? 'dark' : 'light'}`}>No active tasks found.</p>
           ) : (
             tasks.slice(0, 4).map(task => {
               const colorStyle = getSubjectColor(task.subject);
               const priorityColor = getPriorityColor(task.priority);
               return (
-                <div key={task._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 0', borderBottom: `1px solid ${theme.border}` }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                    <strong style={{ fontSize: '14px', color: theme.text, fontWeight: '600' }}>{task.title}</strong> 
-                    <span style={{ fontSize: '11px', fontWeight: '600', color: colorStyle.text, backgroundColor: colorStyle.bg, padding: '2px 8px', borderRadius: '6px', alignSelf: 'flex-start', border: `1px solid ${colorStyle.border}` }}>
+                <div key={task._id} className={`recent-task-item ${darkMode ? 'dark' : 'light'}`}>
+                  <div className="recent-task-info">
+                    <strong className={`recent-task-title ${darkMode ? 'dark' : 'light'}`}>{task.title}</strong> 
+                    <span className="recent-task-subject-pill" style={{ color: colorStyle.text, backgroundColor: colorStyle.bg, borderColor: colorStyle.border }}>
                       {task.subject || 'General'}
                     </span>
                   </div>
-                  <span style={{ fontSize: '11px', fontWeight: '600', color: priorityColor, backgroundColor: `${priorityColor}15`, padding: '4px 10px', borderRadius: '20px', border: `1px solid ${priorityColor}30` }}>
+                  <span className="recent-task-priority-pill" style={{ color: priorityColor, backgroundColor: `${priorityColor}15`, borderColor: `${priorityColor}30` }}>
                     {task.priority} Priority
                   </span>
                 </div>
@@ -77,50 +102,50 @@ export default function DashboardView({
           )}
         </div>
 
-        <div style={{ padding: '24px', borderRadius: '12px', border: `1px solid ${theme.border}`, background: theme.cardBg }}>
-          <h3 style={{ fontSize: '16px', fontWeight: 'bold', marginTop: 0, marginBottom: '20px', color: theme.text, textAlign: 'center' }}>Quick Actions</h3>
+        {/* Right Column: Quick Actions */}
+        <div className={`quick-actions-card ${darkMode ? 'dark' : 'light'}`}>
+          <h3 className={`card-title ${darkMode ? 'dark' : 'light'}`} style={{ marginBottom: '4px' }}>Quick Actions</h3>
           
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
+          <div className="quick-actions-list">
             <button 
               onClick={() => setIsAddTaskOpen(true)}
-              style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 18px', borderRadius: '10px', border: `1px solid ${theme.border}`, cursor: 'pointer', background: darkMode ? '#0f172a' : '#f8fafc' }}
+              className={`action-btn-item ${darkMode ? 'dark' : 'light'}`}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <PlusCircle size={18} color="#f97316" />
-                <span style={{ fontWeight: '600', fontSize: '13px', color: theme.text }}>Add New Assignment/Exam</span>
+              <div className="action-btn-content">
+                <PlusCircle size={18} color="#4B7B9D" />
+                <span className={`action-btn-text ${darkMode ? 'dark' : 'light'}`}>Add Task</span>
               </div>
-              <ChevronRight size={16} color={theme.subText} />
+              <ChevronRight size={16} color="#4B7B9D" />
             </button>
-
             <button 
-              onClick={() => { setWorkspaceSubView('todos'); setToDoSubFilter('exam'); setActiveTab('academics'); }}
-              style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 18px', borderRadius: '10px', border: `1px solid ${theme.border}`, cursor: 'pointer', background: darkMode ? '#0f172a' : '#f8fafc' }}
+              onClick={() => { setToDoSubFilter('all'); setActiveTab('academics'); }}
+              className={`action-btn-item ${darkMode ? 'dark' : 'light-alt'}`}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <FileText size={18} color="#ef4444" />
-                <span style={{ fontWeight: '600', fontSize: '13px', color: theme.text }}>View Exam Schedule</span>
+              <div className="action-btn-content">
+                <FileText size={18} color="#4B7B9D" />
+                <span className={`action-btn-text ${darkMode ? 'dark' : 'light'}`}>View All Requirements</span>
               </div>
-              <ChevronRight size={16} color={theme.subText} />
+              <ChevronRight size={16} color="#4B7B9D" />
             </button>
-
             <button 
               onClick={() => setActiveTab('study')}
-              style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 18px', borderRadius: '10px', border: `1px solid ${theme.border}`, cursor: 'pointer', background: darkMode ? '#0f172a' : '#f8fafc' }}
+              className={`action-btn-item ${darkMode ? 'dark' : 'light'}`}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Timer size={18} color="#10b981" />
-                <span style={{ fontWeight: '600', fontSize: '13px', color: theme.text }}>Start Focus Session</span>
+              <div className="action-btn-content">
+                <Timer size={18} color="#4B7B9D" />
+                <span className={`action-btn-text ${darkMode ? 'dark' : 'light'}`}>Start Focus Session</span>
               </div>
-              <ChevronRight size={16} color={theme.subText} />
+              <ChevronRight size={16} color="#4B7B9D" />
             </button>
           </div>
 
-          <div style={{ background: '#fff7ed', border: '1px solid #ffedd5', padding: '16px', borderRadius: '10px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <Award size={24} color="#ea580c" style={{ marginBottom: '6px' }} />
-            <h4 style={{ margin: '0 0 4px 0', fontSize: '16px', color: '#9a3412', fontWeight: 'bold' }}>Keep it going!</h4>
-            <p style={{ margin: 0, fontSize: '12px', color: '#c2410c', lineHeight: '1.4' }}>Organize your subjects to manage tasks efficiently.</p>
+          <div className="promo-card">
+            <Sun size={24} color="#4B7B9D" className="promo-icon" />
+            <h4 className="promo-title">Keep it going!</h4>
+            <p className="promo-desc">Organize your subjects to manage tasks efficiently.</p>
           </div>
         </div>
+
       </div>
     </div>
   );

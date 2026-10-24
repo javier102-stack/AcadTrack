@@ -1,80 +1,137 @@
-import { CheckSquare, FileText, Search, Layers, Clock, Paperclip, CheckCircle, Edit3, Trash2 } from 'lucide-react';
+import { useState } from 'react';
+import { 
+  CheckSquare, HelpCircle, FileText, FolderGit2, Search, Clock, 
+  CheckCircle, Edit3, Trash2, LayoutGrid, List
+} from 'lucide-react';
+import './AcademicsView.css';
 
-export default function AcademicsView({
-  workspaceSubView, setWorkspaceSubView, toDoSubFilter, setToDoSubFilter,
-  assignmentsList, examsList, searchTerm, setSearchTerm, filterSubject, setFilterSubject,
+export default function AcademicsView({ 
+  toDoSubFilter, setToDoSubFilter,
+  assignmentsList, quizzesList, examsList, projectsList, searchTerm, setSearchTerm, filterSubject, setFilterSubject,
   filterPriority, setFilterPriority, filterStatus, setFilterStatus, rawSubjects,
   sortBy, setSortBy, sortedToDos, tasks, theme, darkMode,
   getSubjectColor, getPriorityColor, getDueDateStatus, toggleComplete, openEditModal, openDeleteModal
 }) {
+  const [viewMode, setViewMode] = useState('table');
+
+  const handleResetFilters = () => {
+    setToDoSubFilter('all');
+    setSearchTerm('');
+    setFilterSubject('all');
+    setFilterPriority('all');
+    setFilterStatus('all');
+  };
+
+  const getTypeBadgeClass = (taskType) => {
+    const t = (taskType || 'Assignment').toLowerCase();
+    if (t.includes('quiz')) return 'type-quiz';
+    if (t.includes('exam')) return 'type-exam';
+    if (t.includes('project')) return 'type-project';
+    return 'type-assignment';
+  };
+
+  const getTypeBadgeLabel = (taskType) => {
+    const t = (taskType || 'Assignment').toLowerCase();
+    if (t.includes('quiz')) return 'Quiz';
+    if (t.includes('exam')) return 'Exam';
+    if (t.includes('project')) return 'Project';
+    return 'Assignment';
+  };
+
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <button 
-            onClick={() => setWorkspaceSubView('todos')} 
-            style={{ border: 'none', padding: '8px 16px', borderRadius: '8px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', background: workspaceSubView === 'todos' ? '#f97316' : (darkMode ? '#334155' : '#e2e8f0'), color: workspaceSubView === 'todos' ? '#fff' : theme.text }}
+    <div className="academics-wrapper">
+      <div className="academics-grid">
+        
+        {/* LEFT SIDEBAR: 4 Vertical Cards */}
+        <div className="academics-sidebar">
+          
+          {/* Assignments Card */}
+          <div 
+            onClick={() => setToDoSubFilter(toDoSubFilter === 'assignment' ? 'all' : 'assignment')}
+            className={`sidebar-card ${toDoSubFilter === 'assignment' ? 'assignment-active' : (darkMode ? 'assignment-dark' : 'assignment-light')}`}
           >
-            <CheckSquare size={16} /> All Requirements ({tasks.length})
-          </button>
-          <button 
-            onClick={() => setWorkspaceSubView('courses')} 
-            style={{ border: 'none', padding: '8px 16px', borderRadius: '8px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', background: workspaceSubView === 'courses' ? '#f97316' : (darkMode ? '#334155' : '#e2e8f0'), color: workspaceSubView === 'courses' ? '#fff' : theme.text }}
-          >
-            <Layers size={16} /> Courses ({rawSubjects.length})
-          </button>
-        </div>
-      </div>
-
-      {workspaceSubView === 'todos' ? (
-        <>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px', }}>
-            <div 
-              onClick={() => setToDoSubFilte('assignment')}
-              style={{ padding: '20px 24px', borderRadius: '12px', border: '2px solid', cursor: 'pointer', transition: 'all 0.2s ease', background: toDoSubFilter === 'assignment' ? '#e0f2fe' : (darkMode ? '#1e293b' : '#f0f9ff'), borderColor: toDoSubFilter === 'assignment' ? '#0284c7' : theme.border }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <CheckSquare size={22} color="#0284c7" />
-                <span style={{ fontSize: '12px', fontWeight: 'bold', background: '#0284c7', color: '#fff', padding: '2px 8px', borderRadius: '10px' }}>
-                  {assignmentsList.filter(a => !a.completed).length} Active
-                </span>
-              </div>
-              <h3 style={{ margin: '1px 0 4px 0', color: '#0369a1' }}>Assignments</h3>
-              <p style={{ margin: 0, fontSize: '13px', color: '#0284c7' }}>Homeworks, research papers, and class projects.</p>
+            <div className="sidebar-card-header">
+              <CheckSquare size={20} color="#0284c7" />
+              <span className="sidebar-card-badge badge-assignment">
+                {assignmentsList.filter(a => !a.completed).length} Active
+              </span>
             </div>
-
-            <div 
-              onClick={() => setToDoSubFilte('exam')}
-              style={{ padding: '20px 24px', borderRadius: '12px', border: '2px solid', cursor: 'pointer', transition: 'all 0.2s ease', background: toDoSubFilter === 'exam' ? '#fef3c7' : (darkMode ? '#1e293b' : '#fffbeb'), borderColor: toDoSubFilter === 'exam' ? '#d97706' : theme.border }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <FileText size={22} color="#d97706" />
-                <span style={{ fontSize: '12px', fontWeight: 'bold', background: '#d97706', color: '#fff', padding: '2px 8px', borderRadius: '10px' }}>
-                  {examsList.filter(e => !e.completed).length} Scheduled
-                </span>
-              </div>
-              <h3 style={{ margin: '8px 0 4px 0', color: '#b45309' }}>Exams & Quizzes</h3>
-              <p style={{ margin: 0, fontSize: '13px', color: '#d97706' }}>Major exams, quizzes, and long assessments.</p>
-            </div>
+            <h4 className="sidebar-card-title title-assignment">Assignments</h4>
+            <p className="sidebar-card-desc desc-assignment">Homeworks & tasks.</p>
           </div>
 
-          <div style={{ padding: '16px 20px', borderRadius: '12px', border: `1px solid ${theme.border}`, display: 'flex', gap: '15px', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', background: theme.cardBg }}>
-            <div style={{ display: 'flex', alignItems: 'center', border: `1px solid ${theme.border}`, borderRadius: '8px', padding: '8px 14px', flex: 1, minWidth: '280px', gap: '10px', background: darkMode ? '#0f172a' : '#f8fafc' }}>
-              <Search size={16} color={theme.subText} />
-              <input
-                type="text"
-                placeholder="Search by assignment title, subject, or description..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                style={{ border: 'none', background: 'transparent', outline: 'none', width: '100%', fontSize: '13px', color: theme.text }}
-              />
+          {/* Quizzes Card */}
+          <div 
+            onClick={() => setToDoSubFilter(toDoSubFilter === 'quiz' ? 'all' : 'quiz')}
+            className={`sidebar-card ${toDoSubFilter === 'quiz' ? 'quiz-active' : (darkMode ? 'quiz-dark' : 'quiz-light')}`}
+          >
+            <div className="sidebar-card-header">
+              <HelpCircle size={20} color="#9333ea" />
+              <span className="sidebar-card-badge badge-quiz">
+                {quizzesList.filter(q => !q.completed).length} Active
+              </span>
+            </div>
+            <h4 className="sidebar-card-title title-quiz">Quizzes</h4>
+            <p className="sidebar-card-desc desc-quiz">Short tests & checkups.</p>
+          </div>
+
+          {/* Exams Card */}
+          <div 
+            onClick={() => setToDoSubFilter(toDoSubFilter === 'exam' ? 'all' : 'exam')}
+            className={`sidebar-card ${toDoSubFilter === 'exam' ? 'exam-active' : (darkMode ? 'exam-dark' : 'exam-light')}`}
+          >
+            <div className="sidebar-card-header">
+              <FileText size={20} color="#d97706" />
+              <span className="sidebar-card-badge badge-exam">
+                {examsList.filter(e => !e.completed).length} Scheduled
+              </span>
+            </div>
+            <h4 className="sidebar-card-title title-exam">Exams</h4>
+            <p className="sidebar-card-desc desc-exam">Major assessments.</p>
+          </div>
+
+          {/* Projects Card */}
+          <div 
+            onClick={() => setToDoSubFilter(toDoSubFilter === 'project' ? 'all' : 'project')}
+            className={`sidebar-card ${toDoSubFilter === 'project' ? 'project-active' : (darkMode ? 'project-dark' : 'project-light')}`}
+          >
+            <div className="sidebar-card-header">
+              <FolderGit2 size={20} color="#16a34a" />
+              <span className="sidebar-card-badge badge-project">
+                {projectsList.filter(p => !p.completed).length} Active
+              </span>
+            </div>
+            <h4 className="sidebar-card-title title-project">Projects</h4>
+            <p className="sidebar-card-desc desc-project">Term projects & labs.</p>
+          </div>
+        </div>
+
+        {/* RIGHT COLUMN */}
+        <div className="academics-main">
+          
+          <div className="academics-top-bar">
+            <div className="search-container">
+              <button onClick={handleResetFilters} className="btn-all-reqs">
+                <CheckSquare size={16} /> All Requirements ({tasks.length})
+              </button>
+              
+              <div className={`search-box ${darkMode ? 'dark' : 'light'}`}>
+                <Search size={16} color={theme.subText} />
+                <input
+                  type="text"
+                  placeholder="Search tasks, subjects, or keywords..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className={`search-input ${darkMode ? 'dark' : 'light'}`}
+                />
+              </div>
             </div>
 
-            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            <div className="filters-group">
               <select 
                 value={filterSubject} 
                 onChange={(e) => setFilterSubject(e.target.value)}
-                style={{ padding: '8px 12px', borderRadius: '8px', border: `1px solid ${theme.border}`, fontSize: '13px', fontWeight: '600', outline: 'none', cursor: 'pointer', background: darkMode ? '#0f172a' : '#f8fafc', color: theme.text }}
+                className={`filter-select ${darkMode ? 'dark' : 'light'}`}
               >
                 <option value="all">All Subjects</option>
                 {rawSubjects.map((subj, idx) => (
@@ -85,7 +142,7 @@ export default function AcademicsView({
               <select 
                 value={filterPriority} 
                 onChange={(e) => setFilterPriority(e.target.value)}
-                style={{ padding: '8px 12px', borderRadius: '8px', border: `1px solid ${theme.border}`, fontSize: '13px', fontWeight: '600', outline: 'none', cursor: 'pointer', background: darkMode ? '#0f172a' : '#f8fafc', color: theme.text }}
+                className={`filter-select ${darkMode ? 'dark' : 'light'}`}
               >
                 <option value="all">All Priorities</option>
                 <option value="High">High</option>
@@ -96,23 +153,38 @@ export default function AcademicsView({
               <select 
                 value={filterStatus} 
                 onChange={(e) => setFilterStatus(e.target.value)}
-                style={{ padding: '8px 12px', borderRadius: '8px', border: `1px solid ${theme.border}`, fontSize: '13px', fontWeight: '600', outline: 'none', cursor: 'pointer', background: darkMode ? '#0f172a' : '#f8fafc', color: theme.text }}
+                className={`filter-select ${darkMode ? 'dark' : 'light'}`}
               >
                 <option value="all">All Statuses</option>
                 <option value="pending">Pending</option>
                 <option value="completed">Completed</option>
               </select>
+
+              <div className={`view-switcher ${darkMode ? 'dark' : 'light'}`}>
+                <button 
+                  onClick={() => setViewMode('table')} 
+                  className={`view-btn ${viewMode === 'table' ? (darkMode ? 'active-dark' : 'active-light') : (darkMode ? 'inactive-dark' : 'inactive-light')}`}
+                >
+                  <List size={14} /> Table
+                </button>
+                <button 
+                  onClick={() => setViewMode('grid')} 
+                  className={`view-btn ${viewMode === 'grid' ? (darkMode ? 'active-dark' : 'active-light') : (darkMode ? 'inactive-dark' : 'inactive-light')}`}
+                >
+                  <LayoutGrid size={14} /> Grid
+                </button>
+              </div>
             </div>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '15px 0', flexWrap: 'wrap', gap: '10px' }}>
+          <div className="academics-sort-bar">
             <small style={{ color: theme.subText, fontWeight: 'bold' }}>Showing {sortedToDos.length} of {tasks.length} tasks</small>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '12px', color: theme.subText, fontWeight: '600' }}>Sort by:</span>
+            <div className="sort-select-wrapper">
+              <span className="sort-label-text" style={{ color: theme.subText }}>Sort by:</span>
               <select 
                 value={sortBy} 
                 onChange={(e) => setSortBy(e.target.value)}
-                style={{ padding: '4px 10px', fontSize: '12px', borderRadius: '8px', border: `1px solid ${theme.border}`, fontWeight: '600', outline: 'none', cursor: 'pointer', background: theme.cardBg, color: theme.text }}
+                className={`filter-select sort-select-custom ${darkMode ? 'dark' : 'light'}`}
               >
                 <option value="dueDate">Due Date</option>
                 <option value="priority">Priority</option>
@@ -122,81 +194,156 @@ export default function AcademicsView({
           </div>
 
           {sortedToDos.length === 0 ? (
-            <div style={{ padding: '30px', borderRadius: '12px', border: `1px solid ${theme.border}`, textAlign: 'center', background: theme.cardBg }}>
-              <p style={{ margin: 0, fontSize: '14px', color: theme.subText }}>No requirements found under this view.</p>
+            <div className={`empty-state ${darkMode ? 'dark' : 'light'}`}>
+              <p className="empty-state-text" style={{ color: theme.subText }}>No requirements found under this view.</p>
+            </div>
+          ) : viewMode === 'table' ? (
+            <div className={`table-wrapper ${darkMode ? 'dark' : 'light'}`}>
+              <table className="academics-table">
+                <thead>
+                  <tr className={`table-header-row ${darkMode ? 'dark' : 'light'}`}>
+                    <th className="th-cell th-status">Status</th>
+                    <th className="th-cell">Task Name & Details</th>
+                    <th className="th-cell">Type</th>
+                    <th className="th-cell">Subject</th>
+                    <th className="th-cell">Priority</th>
+                    <th className="th-cell">Due Date</th>
+                    <th className="th-cell th-progress">Progress</th>
+                    <th className="th-cell th-actions">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sortedToDos.map((task) => {
+                    const statusBadge = getDueDateStatus(task.dueDate, task.completed);
+                    const colorStyle = getSubjectColor(task.subject);
+                    const typeClass = getTypeBadgeClass(task.taskType);
+                    const typeLabel = getTypeBadgeLabel(task.taskType);
+                    const progressVal = task.completed ? 100 : (typeLabel !== 'Assignment' ? 0 : 50);
+                    return (
+                      <tr key={task._id} className={`td-cell-row ${darkMode ? 'dark' : 'light'}`} style={{ opacity: task.completed ? 0.6 : 1 }}>
+                        <td className="td-cell">
+                          <input 
+                            type="checkbox" 
+                            checked={task.completed} 
+                            onChange={() => toggleComplete(task._id, task.completed)}
+                            className="task-checkbox"
+                          />
+                        </td>
+                        <td className="td-cell">
+                          <div className={`task-title-text ${task.completed ? 'task-title-completed' : ''}`} style={{ color: theme.text }}>{task.title}</div>
+                          <div className="task-desc-text" style={{ color: theme.subText }}>
+                            {task.description || 'No description'}
+                          </div>
+                        </td>
+                        <td className="td-cell">
+                          <span className={`badge-pill ${typeClass}`}>
+                            {typeLabel}
+                          </span>
+                        </td>
+                        <td className="td-cell">
+                          <span className="subject-pill" style={{ background: colorStyle.bg, color: colorStyle.text, border: `1px solid ${colorStyle.border}` }}>
+                            {task.subject || 'General'}
+                          </span>
+                        </td>
+                        <td className="td-cell">
+                          <span className="priority-pill" style={{ color: getPriorityColor(task.priority), background: `${getPriorityColor(task.priority)}15` }}>
+                            🔥 {task.priority}
+                          </span>
+                        </td>
+                        <td className="td-cell due-date-cell" style={{ color: statusBadge?.color || theme.subText }}>
+                          {statusBadge ? statusBadge.label : 'No due date'}
+                        </td>
+                        <td className="td-cell">
+                          <div className="progress-container">
+                            <div className={`progress-bar-bg ${darkMode ? 'dark' : 'light'}`}>
+                              <div className="progress-bar-fill" style={{ width: `${progressVal}%`, background: task.completed ? '#10b981' : '#2563eb' }} />
+                            </div>
+                            <span className="progress-text" style={{ color: theme.subText }}>{progressVal}%</span>
+                          </div>
+                        </td>
+                        <td className="td-cell th-actions">
+                          <div className="actions-cell">
+                            <button onClick={() => openEditModal(task)} className="action-btn" title="Edit Task">
+                              <Edit3 size={16} color="#2563eb" />
+                            </button>
+                            <button onClick={() => openDeleteModal(task)} className="action-btn" title="Delete Task">
+                              <Trash2 size={16} color="#ef4444" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px', marginTop: '10px' }}>
+            <div className="grid-view-container">
               {sortedToDos.map((task) => {
-                const isExam = task.taskType && task.taskType.toLowerCase().includes('exam');
                 const statusBadge = getDueDateStatus(task.dueDate, task.completed);
                 const colorStyle = getSubjectColor(task.subject);
-                const progressVal = task.completed ? 100 : (isExam ? 0 : 50);
-
+                const typeClass = getTypeBadgeClass(task.taskType);
+                const typeLabel = getTypeBadgeLabel(task.taskType);
+                const progressVal = task.completed ? 100 : (typeLabel !== 'Assignment' ? 0 : 50);
                 return (
                   <div 
                     key={task._id} 
+                    className="grid-card"
                     style={{ 
-                      padding: '20px', borderRadius: '12px', border: `1px solid ${statusBadge?.label.includes('Overdue') ? '#fecaca' : theme.border}`, 
-                      borderLeft: isExam ? '4px solid #ef4444' : '4px solid #2563eb',
-                      opacity: task.completed ? 0.7 : 1, background: theme.cardBg, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' 
+                      border: `1px solid ${statusBadge?.label.includes('Overdue') ? '#fecaca' : theme.border}`, 
+                      opacity: task.completed ? 0.7 : 1, 
+                      background: theme.cardBg
                     }}
                   >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '11px', padding: '3px 10px', borderRadius: '6px', fontWeight: 'bold', background: colorStyle.bg, color: colorStyle.text, border: `1px solid ${colorStyle.border}` }}>
-                        {task.subject || 'General'}
-                      </span>
-                      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                        <span style={{ fontSize: '11px', fontWeight: 'bold', color: getPriorityColor(task.priority), background: `${getPriorityColor(task.priority)}15`, padding: '2px 8px', borderRadius: '12px' }}>
+                    <div>
+                      <div className="grid-card-top">
+                        <div className="grid-card-badges">
+                          <span className="subject-pill" style={{ background: colorStyle.bg, color: colorStyle.text, border: `1px solid ${colorStyle.border}` }}>
+                            {task.subject || 'General'}
+                          </span>
+                          <span className={`badge-pill ${typeClass}`}>
+                            {typeLabel}
+                          </span>
+                        </div>
+                        <span className="priority-pill" style={{ color: getPriorityColor(task.priority), background: `${getPriorityColor(task.priority)}15` }}>
                           🔥 {task.priority}
                         </span>
-                        <span style={{ fontSize: '11px', fontWeight: 'bold', color: task.completed ? '#10b981' : '#2563eb', background: task.completed ? '#f0fdf4' : '#eff6ff', padding: '2px 8px', borderRadius: '12px' }}>
-                          {task.completed ? 'Completed' : (isExam ? 'Scheduled' : 'In Progress')}
-                        </span>
                       </div>
+                      <h3 className={`grid-card-title ${task.completed ? 'task-title-completed' : ''}`} style={{ color: theme.text }}>
+                        {task.title}
+                      </h3>
+                      <p className="grid-card-desc" style={{ color: theme.subText }}>
+                        {task.description || 'No additional details provided.'}
+                      </p>
                     </div>
-
-                    <h3 style={{ fontSize: '16px', fontWeight: 'bold', margin: '12px 0 6px 0', color: theme.text, textDecoration: task.completed ? 'line-through' : 'none' }}>
-                      {task.title}
-                    </h3>
-
-                    <p style={{ fontSize: '13px', color: theme.subText, margin: '0 0 16px 0', lineHeight: '1.4', minHeight: '36px' }}>
-                      {task.description || 'No additional details provided.'}
-                    </p>
-
-                    <div style={{ marginBottom: '16px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: 'bold', color: theme.subText, marginBottom: '4px' }}>
-                        <span>Progress</span>
-                        <span>{progressVal}%</span>
+                    <div>
+                      <div className="grid-card-progress-section">
+                        <div className="grid-card-progress-header" style={{ color: theme.subText }}>
+                          <span>Progress</span>
+                          <span>{progressVal}%</span>
+                        </div>
+                        <div className={`progress-bar-bg ${darkMode ? 'dark' : 'light'}`}>
+                          <div className="progress-bar-fill" style={{ width: `${progressVal}%`, background: task.completed ? '#10b981' : '#2563eb', transition: 'width 0.3s ease' }} />
+                        </div>
                       </div>
-                      <div style={{ width: '100%', height: '6px', background: darkMode ? '#334155' : '#e2e8f0', borderRadius: '3px', overflow: 'hidden' }}>
-                        <div style={{ height: '100%', width: `${progressVal}%`, background: task.completed ? '#10b981' : '#2563eb', transition: 'width 0.3s ease' }} />
-                      </div>
-                    </div>
-
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '12px', borderTop: '1px solid #f1f5f9' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <Clock size={14} color={statusBadge?.color || theme.subText} />
-                        <span style={{ fontSize: '12px', fontWeight: 'bold', color: statusBadge?.color || theme.subText }}>
-                          {statusBadge ? statusBadge.label : 'No due date'}
-                        </span>
-                      </div>
-
-                      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                        {task.notesLink && (
-                          <a href={task.notesLink} target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb', padding: '4px' }} title="View Reviewer Link">
-                            <Paperclip size={16} />
-                          </a>
-                        )}
-                        <button onClick={() => toggleComplete(task._id, task.completed)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }} title={task.completed ? "Mark Pending" : "Mark Complete"}>
-                          <CheckCircle size={18} color={task.completed ? '#10b981' : '#94a3b8'} />
-                        </button>
-                        <button onClick={() => openEditModal(task)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }} title="Edit Requirement">
-                          <Edit3 size={18} color="#2563eb" />
-                        </button>
-                        <button onClick={() => openDeleteModal(task)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }} title="Delete Requirement">
-                          <Trash2 size={18} color="#ef4444" />
-                        </button>
+                      <div className="grid-card-footer" style={{ borderTop: `1px solid ${theme.border}` }}>
+                        <div className="grid-card-date-box">
+                          <Clock size={13} color={statusBadge?.color || theme.subText} />
+                          <span className="grid-card-date-text" style={{ color: statusBadge?.color || theme.subText }}>
+                            {statusBadge ? statusBadge.label : 'No due date'}
+                          </span>
+                        </div>
+                        <div className="grid-card-actions">
+                          <button onClick={() => toggleComplete(task._id, task.completed)} className="action-btn" title={task.completed ? "Mark Pending" : "Mark Complete"}>
+                            <CheckCircle size={16} color={task.completed ? '#10b981' : '#94a3b8'} />
+                          </button>
+                          <button onClick={() => openEditModal(task)} className="action-btn" title="Edit Task">
+                            <Edit3 size={16} color="#2563eb" />
+                          </button>
+                          <button onClick={() => openDeleteModal(task)} className="action-btn" title="Delete Task">
+                            <Trash2 size={16} color="#ef4444" />
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -204,33 +351,8 @@ export default function AcademicsView({
               })}
             </div>
           )}
-        </>
-      ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginTop: '10px' }}>
-          {rawSubjects.map((subjName, index) => {
-            const count = tasks.filter(t => (t.subject || 'General') === subjName).length;
-            const colorStyle = getSubjectColor(subjName);
-            return (
-              <div key={index} style={{ padding: '24px', borderRadius: '12px', border: `1px solid ${colorStyle.border}`, background: theme.cardBg, display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Layers size={20} color={colorStyle.text} />
-                  <span style={{ fontSize: '12px', padding: '4px 10px', borderRadius: '12px', fontWeight: 'bold', background: colorStyle.bg, color: colorStyle.text, border: `1px solid ${colorStyle.border}` }}>
-                    {count} Tasks
-                  </span>
-                </div>
-                <h3 style={{ fontSize: '18px', fontWeight: 'bold', margin: '6px 0 0 0', color: theme.text }}>{subjName}</h3>
-                <p style={{ fontSize: '13px', margin: 0, lineHeight: '1.4', color: theme.subText }}>Academic course managed under your student system.</p>
-                <button 
-                  onClick={() => { setFilterSubject(subjName); setWorkspaceSubView('todos'); }} 
-                  style={{ background: 'none', border: 'none', fontWeight: '600', fontSize: '13px', cursor: 'pointer', textAlign: 'left', padding: 0, marginTop: '10px', color: colorStyle.text }}
-                >
-                  View Tasks →
-                </button>
-              </div>
-            );
-          })}
         </div>
-      )}
+      </div>
     </div>
   );
 }

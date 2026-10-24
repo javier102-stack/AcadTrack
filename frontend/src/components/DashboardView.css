@@ -1,0 +1,333 @@
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.alert-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid #FECACA;
+  padding: 14px 20px;
+  border-radius: 16px;
+  font-size: 14px;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.05);
+}
+.alert-banner.light { background: #FEF2F2; color: #DC2626; }
+.alert-banner.dark { background: rgba(62, 16, 20, 0.9); color: #fecaca; }
+
+.welcome-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 28px 36px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #7FA8D6 0%, #A8C6E7 50%, #FFE08A 100%);
+  color: #1E293B;
+  box-shadow: 0 8px 24px rgba(75, 123, 157, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+
+.banner-content-left {
+  z-index: 1;
+}
+
+.banner-content-right {
+  z-index: 1;
+}
+
+.banner-heading {
+  margin: 0 0 6px 0;
+  font-size: 24px;
+  font-weight: 800;
+  color: #1E293B;
+  letter-spacing: -0.3px;
+}
+
+.banner-sub {
+  margin: 0;
+  font-size: 14px;
+  color: #334155;
+  font-weight: 500;
+}
+
+.banner-time-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  color: #1E293B;
+  padding: 8px 18px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+}
+
+.banner-time-separator {
+  opacity: 0.5;
+  margin: 0 2px;
+}
+
+.banner-clock-text {
+  font-family: Inter, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+.stat-card {
+  padding: 22px 24px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  backdrop-filter: blur(10px);
+}
+.stat-card.light { background: rgba(255, 255, 255, 0.85); border: 1px solid rgba(255, 255, 255, 0.7); }
+.stat-card.dark { background: rgba(43, 59, 78, 0.85); border: 1px solid rgba(255, 255, 255, 0.1); }
+
+.stat-label {
+  font-size: 13px;
+  font-weight: 600;
+}
+.stat-label.light { color: #5A6B7C; }
+.stat-label.dark { color: #A8C6E7; }
+
+.stat-value {
+  font-size: 32px;
+  font-weight: 800;
+  margin: 6px 0 2px 0;
+}
+.stat-value-total { color: #4B7B9D; }
+.stat-value-pending { color: #B38108; }
+.stat-value-exam { color: #DC2626; }
+.stat-value-completed { color: #047857; }
+
+.stat-sub {
+  font-size: 12px;
+}
+.stat-sub.light { color: #5A6B7C; }
+.stat-sub.dark { color: #A8C6E7; }
+
+.dashboard-main-grid {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 18px;
+  align-items: stretch;
+}
+
+.recent-tasks-card {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  background: linear-gradient(135deg, rgba(127, 168, 214, 0.15) 0%, rgba(255, 224, 138, 0.15) 100%) !important;
+  border: 1px solid rgba(168, 198, 231, 0.6) !important;
+}
+.recent-tasks-card.dark {
+  background: rgba(43, 59, 78, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+.recent-tasks-card .card-title.light {
+  color: #0F172A !important;
+  font-weight: 800 !important;
+}
+.card-title.dark { color: #FFF7D6; }
+
+.empty-task-text {
+  margin: 0;
+  font-size: 14px;
+}
+.recent-tasks-card .empty-task-text.light {
+  color: #334155 !important;
+  font-weight: 600 !important;
+}
+.empty-task-text.dark { color: #A8C6E7; }
+
+.recent-task-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+}
+.recent-tasks-card .recent-task-item.light {
+  background: rgba(255, 255, 255, 0.6) !important;
+  padding: 10px 14px !important;
+  border-radius: 10px !important;
+  margin-bottom: 6px !important;
+  border: 1px solid rgba(168, 198, 231, 0.3) !important;
+}
+.recent-task-item.dark { border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+
+.recent-task-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.recent-task-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+.recent-tasks-card .recent-task-title.light {
+  color: #1E293B !important;
+  font-weight: 700 !important;
+}
+.recent-task-title.dark { color: #f8fafc; }
+
+.recent-task-subject-pill {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+  align-self: flex-start;
+  border: 1px solid;
+}
+
+.recent-task-priority-pill {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid;
+}
+
+.quick-actions-card {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+.quick-actions-card.light { background: rgba(255, 255, 255, 0.85); border: 1px solid rgba(255, 255, 255, 0.7); }
+.quick-actions-card.dark { background: rgba(43, 59, 78, 0.85); border: 1px solid rgba(255, 255, 255, 0.1); }
+
+.quick-actions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.action-btn-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.action-btn-item.light { border: 1px solid #A8C6E7; background: #EBF4FB; }
+.action-btn-item.dark { border: 1px solid rgba(255, 255, 255, 0.1); background: #1D2A3A; }
+.action-btn-item.light-alt { border: 1px solid #A8C6E7; background: #ffffff; }
+
+.action-btn-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.action-btn-text {
+  font-weight: 600;
+  font-size: 13px;
+}
+.action-btn-text.light { color: #1E293B; }
+.action-btn-text.dark { color: #f8fafc; }
+
+.action-btn-item:hover {
+  transform: translateX(4px);
+}
+
+/* 1st button (Add Task) - Gradient pareho sa welcome banner */
+.quick-actions-list .action-btn-item:nth-child(1) {
+  background: linear-gradient(135deg, #7FA8D6 0%, #A8C6E7 50%, #FFE08A 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.8) !important;
+}
+.quick-actions-list .action-btn-item:nth-child(1) .action-btn-text,
+.quick-actions-list .action-btn-item:nth-child(1) svg {
+  color: #1E293B !important;
+}
+.quick-actions-list .action-btn-item:nth-child(1):hover {
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(75, 123, 157, 0.25);
+}
+
+/* 2nd button (View All Requirements) - Limpyo ug presko nga asul sa center */
+.quick-actions-list .action-btn-item:nth-child(2) {
+  background: #EBF4FB !important;
+  border: 1px solid #A8C6E7 !important;
+}
+.quick-actions-list .action-btn-item:nth-child(2) .action-btn-text,
+.quick-actions-list .action-btn-item:nth-child(2) svg {
+  color: #4B7B9D !important;
+}
+.quick-actions-list .action-btn-item:nth-child(2):hover {
+  background: #d8eafb !important;
+  transform: translateX(4px);
+}
+
+/* 3rd button (Start Focus Session) - Gradient pareho sa welcome banner */
+.quick-actions-list .action-btn-item:nth-child(3) {
+  background: linear-gradient(135deg, #7FA8D6 0%, #A8C6E7 50%, #FFE08A 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.8) !important;
+}
+.quick-actions-list .action-btn-item:nth-child(3) .action-btn-text,
+.quick-actions-list .action-btn-item:nth-child(3) svg {
+  color: #1E293B !important;
+}
+.quick-actions-list .action-btn-item:nth-child(3):hover {
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(75, 123, 157, 0.25);
+}
+
+.promo-card {
+  flex: 1;
+  background: linear-gradient(135deg, rgba(127, 168, 214, 0.15) 0%, rgba(255, 224, 138, 0.25) 100%) !important;
+  border: 1px solid rgba(168, 198, 231, 0.6) !important;
+  padding: 16px;
+  border-radius: 12px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+}
+
+.promo-icon {
+  margin-bottom: 6px;
+  color: #D97706 !important;
+}
+
+.promo-title {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  color: #1E293B;
+  font-weight: 700;
+}
+
+.promo-desc {
+  margin: 0;
+  font-size: 12px;
+  color: #475569;
+  line-height: 1.4;
+}

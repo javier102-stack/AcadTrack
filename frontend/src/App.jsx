@@ -7,23 +7,22 @@ import DashboardView from './components/DashboardView';
 import AcademicsView from './components/AcademicsView';
 import CalendarView from './components/CalendarView';
 import StudyView from './components/StudyView';
+import AIAssistant from './components/AIAssistant';
 import { AddTaskModal, EditTaskModal, DeleteModal } from './components/TaskModals';
 import Login from './Login';
-import AIAssistant from './components/AIAssistant';
+import './App.css';
 
 const API_URL = 'http://localhost:5000/api/tasks';
 const AUTH_URL = 'http://localhost:5000/api/auth';
 
 axios.defaults.withCredentials = true;
 
-// Color Palette for Subjects 
 const SUBJECT_COLORS = [
-  { bg: '#eff6ff', text: '#2563eb', border: '#bfdbfe' }, // Blue
-  { bg: '#fef2f2', text: '#dc2626', border: '#fecaca' }, // Red
-  { bg: '#f0fdf4', text: '#16a34a', border: '#bbf7d0' }, // Green
-  { bg: '#faf5ff', text: '#9333ea', border: '#e9d5ff' }, // Purple
-  { bg: '#fff7ed', text: '#ea580c', border: '#ffedd5' }, // Orange
-  { bg: '#fefce8', text: '#ca8a04', border: '#fef08a' }  // Yellow
+  { bg: '#EBF4FB', text: '#4B7B9D', border: '#A8C6E7' },
+  { bg: '#FFF2C6', text: '#9E7412', border: '#FFE08A' },
+  { bg: '#FEF2F2', text: '#DC2626', border: '#FECACA' },
+  { bg: '#F3E8FF', text: '#7E22CE', border: '#E9D5FF' },
+  { bg: '#ECFDF5', text: '#047857', border: '#A7F3D0' }
 ];
 
 function App() {
@@ -31,7 +30,8 @@ function App() {
   const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [workspaceSubView, setWorkspaceSubView] = useState('todos'); 
+  
+  // New Layout Sub-filters & States
   const [toDoSubFilter, setToDoSubFilter] = useState('all'); 
   const [filterSubject, setFilterSubject] = useState('all');
   const [filterPriority, setFilterPriority] = useState('all');
@@ -40,7 +40,6 @@ function App() {
   const [darkMode, setDarkMode] = useState(false);
   
   const [calendarNotes, setCalendarNotes] = useState(localStorage.getItem('acadtrack_calendar_notes') || '');
-
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -50,13 +49,10 @@ function App() {
   const [taskType, setTaskType] = useState('Assignment');
   
   const [searchTerm, setSearchTerm] = useState('');
-
   const [customMinutesInput, setCustomMinutesInput] = useState(25);
   const [pomodoroSeconds, setPomodoroSeconds] = useState(25 * 60);
   const [isPomodoroActive, setIsPomodoroActive] = useState(false);
-
   const [currentMonthDate, setCurrentMonthDate] = useState(new Date());
-
   const [isEditing, setIsEditing] = useState(false);
   const [currentTask, setCurrentTask] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -74,54 +70,33 @@ function App() {
   };
 
   // Check whether the student is already logged in
-useEffect(() => {
-  let isMounted = true;
+  useEffect(() => {
+    let isMounted = true;
+    axios.get(`${AUTH_URL}/me`)
+      .then(response => {
+        if (isMounted) setUser(response.data.user);
+      })
+      .catch(() => {
+        if (isMounted) setUser(null);
+      })
+      .finally(() => {
+        if (isMounted) setAuthLoading(false);
+      });
+    return () => { isMounted = false; };
+  }, []);
 
-  axios.get(`${AUTH_URL}/me`)
-    .then(response => {
-      if (isMounted) {
-        setUser(response.data.user);
-      }
-    })
-    .catch(() => {
-      if (isMounted) {
-        setUser(null);
-      }
-    })
-    .finally(() => {
-      if (isMounted) {
-        setAuthLoading(false);
-      }
-    });
-
-  return () => {
-    isMounted = false;
-  };
-}, []);
-
-// Load tasks only after a login session is confirmed
-useEffect(() => {
-  if (!user) {
-    setTasks([]);
-    return;
-  }
-
-  let isMounted = true;
-
-  axios.get(API_URL)
-    .then(response => {
-      if (isMounted) {
-        setTasks(response.data);
-      }
-    })
-    .catch(error => {
-      console.error('Error fetching tasks:', error);
-    });
-
-  return () => {
-    isMounted = false;
-  };
-}, [user]);
+  // Load tasks only after a login session is confirmed
+  useEffect(() => {
+    if (!user) {
+      setTasks([]);
+      return;
+    }
+    let isMounted = true;
+    axios.get(API_URL)
+      .then(response => { if (isMounted) setTasks(response.data); })
+      .catch(error => console.error('Error fetching tasks:', error));
+    return () => { isMounted = false; };
+  }, [user]);
 
   const fetchTasksData = async () => {
     try {
@@ -131,20 +106,20 @@ useEffect(() => {
   };
 
   const handleLogout = async () => {
-  try {
-    await axios.post(`${AUTH_URL}/logout`);
-  } catch (error) {
-    console.error("Logout request failed:", error);
-  } finally {
+    try {
+      await axios.post(`${AUTH_URL}/logout`);
+    } catch (error) {
+      console.error("Logout request failed:", error);
+    } finally {
+      setUser(null);
+      setTasks([]);
+    }
+  };
+
+  const handleAccountDeleted = () => {
     setUser(null);
     setTasks([]);
-  }
-};
-
-const handleAccountDeleted = () => {
-  setUser(null);
-  setTasks([]);
-};
+  };
 
   useEffect(() => {
     if (!isPomodoroActive) return;
@@ -187,7 +162,7 @@ const handleAccountDeleted = () => {
       setPriority('Medium'); setTaskType('Assignment');
       setIsAddTaskOpen(false);
       fetchTasksData();
-      showToast(`✅ ${taskType === 'Exam' ? 'Exam' : 'Assignment'} successfully added!`);
+      showToast(`✅ ${taskType} successfully added!`);
     } catch (error) { console.error('Error adding task:', error); }
   };
 
@@ -247,22 +222,29 @@ const handleAccountDeleted = () => {
   const pendingTasks = tasks.filter(t => !t.completed).length;
   const completedTasks = tasks.filter(t => t.completed).length;
   const examTasks = tasks.filter(t => t.taskType && t.taskType.toLowerCase().includes('exam') && !t.completed).length;
-
   const rawSubjects = [...new Set(tasks.map(t => t.subject || 'General'))];
   const subjectsList = rawSubjects.map(subjName => ({ name: subjName, taskCount: tasks.filter(t => (t.subject || 'General') === subjName).length }));
-
-  const assignmentsList = tasks.filter(t => !t.taskType || !t.taskType.toLowerCase().includes('exam'));
-  const examsList = tasks.filter(t => t.taskType && t.taskType.toLowerCase().includes('exam'));
+  
+  // Categorized lists required by the updated AcademicsView component
+  const assignmentsList = tasks.filter(t => !t.taskType || t.taskType.toLowerCase() === 'assignment');
+  const quizzesList = tasks.filter(t => t.taskType && t.taskType.toLowerCase() === 'quiz');
+  const examsList = tasks.filter(t => t.taskType && t.taskType.toLowerCase() === 'exam');
+  const projectsList = tasks.filter(t => t.taskType && t.taskType.toLowerCase() === 'project');
 
   const filteredToDos = tasks.filter((task) => {
-    const isExam = task.taskType && task.taskType.toLowerCase().includes('exam');
-    if (toDoSubFilter === 'assignment' && isExam) return false;
-    if (toDoSubFilter === 'exam' && !isExam) return false;
+    const tType = (task.taskType || 'assignment').toLowerCase();
+    
+    if (toDoSubFilter === 'assignment' && tType !== 'assignment') return false;
+    if (toDoSubFilter === 'quiz' && tType !== 'quiz') return false;
+    if (toDoSubFilter === 'exam' && tType !== 'exam') return false;
+    if (toDoSubFilter === 'project' && tType !== 'project') return false;
     if (filterSubject !== 'all' && (task.subject || 'General') !== filterSubject) return false;
     if (filterPriority !== 'all' && task.priority !== filterPriority) return false;
+    
     const matchesSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           (task.subject && task.subject.toLowerCase().includes(searchTerm.toLowerCase())) ||
                           (task.description && task.description.toLowerCase().includes(searchTerm.toLowerCase()));
+    
     if (filterStatus === 'pending') return matchesSearch && !task.completed;
     if (filterStatus === 'completed') return matchesSearch && task.completed;
     return matchesSearch;
@@ -279,18 +261,18 @@ const handleAccountDeleted = () => {
     return 0;
   });
 
-  const getPriorityColor = (p) => p === 'High' ? '#ef4444' : p === 'Medium' ? '#f59e0b' : '#10b981';
+  const getPriorityColor = (p) => p === 'High' ? '#DC2626' : p === 'Medium' ? '#7FA8D6' : '#FFE08A';
 
   const getDueDateStatus = (dueDate, completed) => {
     if (!dueDate) return null;
-    if (completed) return { label: 'Completed', color: '#10b981', bg: '#f0fdf4' };
+    if (completed) return { label: 'Completed', color: '#4B7B9D', bg: '#EBF4FB' };
     const today = new Date(); today.setHours(0, 0, 0, 0);
     const due = new Date(dueDate); due.setHours(0, 0, 0, 0);
     const diffDays = Math.ceil((due - today) / (1000 * 60 * 60 * 24));
     const formattedString = dueDate.split('T')[0];
-    if (diffDays < 0) return { label: `${formattedString} (Overdue)`, color: '#dc2626', bg: '#fef2f2' };
-    if (diffDays === 0) return { label: `${formattedString} (Due Today)`, color: '#ea580c', bg: '#fff7ed' };
-    return { label: formattedString, color: '#64748b', bg: '#f1f5f9' };
+    if (diffDays < 0) return { label: `${formattedString} (Overdue)`, color: '#DC2626', bg: '#FEF2F2' };
+    if (diffDays === 0) return { label: `${formattedString} (Due Today)`, color: '#B38108', bg: '#FFF2C6' };
+    return { label: formattedString, color: '#4B7B9D', bg: '#EBF4FB' };
   };
 
   const overdueCount = tasks.filter(t => {
@@ -307,70 +289,70 @@ const handleAccountDeleted = () => {
   const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
   const theme = {
-    bg: darkMode ? '#0f172a' : '#fafafa',
-    cardBg: darkMode ? '#1e293b' : '#ffffff',
-    text: darkMode ? '#f8fafc' : '#1e293b',
-    subText: darkMode ? '#94a3b8' : '#64748b',
-    border: darkMode ? '#334155' : '#e2e8f0',
+    bg: darkMode ? '#1D2A3A' : '#FFF7D6',
+    cardBg: darkMode ? '#2B3B4E' : '#FFFFFF',
+    text: darkMode ? '#FFF7D6' : '#2D3748',
+    subText: darkMode ? '#A8C6E7' : '#5A6B7C',
+    border: darkMode ? '#3E5066' : '#FFE08A',
+    primary: '#7FA8D6',
+    accentYellow: '#FFE08A',
   };
 
-  // Show a loading screen while checking the login session
-if (authLoading) {
+  if (authLoading) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Inter, sans-serif' }}>
+        Checking login...
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Login onAuthenticated={setUser} />;
+  }
+
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontFamily: 'Inter, sans-serif',
-      }}
+    <div 
+      className={`app-container ${darkMode ? 'dark-bg' : 'light-bg'}`}
+      style={{ color: theme.text }}
     >
-      Checking login...
-    </div>
-  );
-}
+      {toastMessage && (
+        <div style={{ position: 'fixed', bottom: '25px', right: '25px', background: '#0f172a', color: '#ffffff', padding: '12px 20px', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)', fontSize: '14px', fontWeight: '600', zIndex: 2000 }}>
+          {toastMessage}
+        </div>
+      )}
 
-// Show the login/register page if the student is logged out
-if (!user) {
-  return <Login onAuthenticated={setUser} />;
-}
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', width: '100vw', height: '100vh', margin: 0, padding: 0, overflow: 'hidden', fontFamily: 'Inter, sans-serif', boxSizing: 'border-box', position: 'fixed', top: 0, left: 0, background: theme.bg, color: theme.text }}>
-      {toastMessage && <div style={{ position: 'fixed', bottom: '25px', right: '25px', background: '#0f172a', color: '#ffffff', padding: '12px 20px', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)', fontSize: '14px', fontWeight: '600', zIndex: 2000 }}>{toastMessage}</div>}
-
-      
       <Navbar 
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        setIsAddTaskOpen={setIsAddTaskOpen}
-        darkMode={darkMode}
-        setDarkMode={setDarkMode}
+        activeTab={activeTab} 
+        setActiveTab={setActiveTab} 
+        setIsAddTaskOpen={setIsAddTaskOpen} 
+        darkMode={darkMode} 
+        setDarkMode={setDarkMode} 
         onProfileUpdated={(updatedUser) => setUser(updatedUser)}
         user={user}
         onLogout={handleLogout}
         onAccountDeleted={handleAccountDeleted}
+        tasks={tasks}
+        theme={theme}
       />
 
-
-      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', height: 'calc(100vh - 70px)', overflow: 'hidden', boxSizing: 'border-box' }}>
-        <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', padding: 0, boxSizing: 'border-box', width: '100%' }}>
-          <div style={{ padding: '30px 40px', maxWidth: '1200px', margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
+      <main className="app-main-content">
+        <div className="app-scrollable-area">
+          <div className={`app-view-container ${activeTab === 'dashboard' ? 'dashboard-view' : 'standard-view'}`}>
             
             {activeTab === 'dashboard' && (
               <DashboardView 
                 overdueCount={overdueCount} totalTasks={totalTasks} pendingTasks={pendingTasks} examTasks={examTasks} completedTasks={completedTasks}
                 subjectsList={subjectsList} tasks={tasks} formattedCurrentDate={formattedCurrentDate} theme={theme} darkMode={darkMode}
-                setIsAddTaskOpen={setIsAddTaskOpen} setWorkspaceSubView={setWorkspaceSubView} setToDoSubFilter={setToDoSubFilter} setActiveTab={setActiveTab}
+                setIsAddTaskOpen={setIsAddTaskOpen} setToDoSubFilter={setToDoSubFilter} setActiveTab={setActiveTab}
                 getSubjectColor={getSubjectColor} getPriorityColor={getPriorityColor}
               />
             )}
 
             {activeTab === 'academics' && (
               <AcademicsView 
-                workspaceSubView={workspaceSubView} setWorkspaceSubView={setWorkspaceSubView} toDoSubFilter={toDoSubFilter} setToDoSubFilter={setToDoSubFilter}
-                assignmentsList={assignmentsList} examsList={examsList} searchTerm={searchTerm} setSearchTerm={setSearchTerm}
+                toDoSubFilter={toDoSubFilter} setToDoSubFilter={setToDoSubFilter}
+                assignmentsList={assignmentsList} quizzesList={quizzesList} examsList={examsList} projectsList={projectsList}
+                searchTerm={searchTerm} setSearchTerm={setSearchTerm}
                 filterSubject={filterSubject} setFilterSubject={setFilterSubject} filterPriority={filterPriority} setFilterPriority={setFilterPriority}
                 filterStatus={filterStatus} setFilterStatus={setFilterStatus} rawSubjects={rawSubjects} sortBy={sortBy} setSortBy={setSortBy}
                 sortedToDos={sortedToDos} tasks={tasks} theme={theme} darkMode={darkMode} getSubjectColor={getSubjectColor}
@@ -423,7 +405,8 @@ if (!user) {
         confirmDeleteTask={confirmDeleteTask} theme={theme}
       />
 
-       <button
+      {/* Floating AI Chat Trigger Button */}
+      <button
         type="button"
         onClick={() => setIsAIChatOpen((open) => !open)}
         aria-label={isAIChatOpen ? 'Close AI assistant' : 'Open AI assistant'}
@@ -436,18 +419,18 @@ if (!user) {
           height: '60px',
           borderRadius: '50%',
           border: 'none',
-          background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
+          background: 'linear-gradient(135deg, #7FA8D6, #4B7B9D)',
           color: '#fff',
           fontSize: '28px',
           cursor: 'pointer',
-          boxShadow: '0 8px 24px rgba(37, 99, 235, 0.35)',
+          boxShadow: '0 8px 24px rgba(75, 123, 157, 0.35)',
           zIndex: 3000,
         }}
       >
         {isAIChatOpen ? '×' : '✦'}
       </button>
 
-      {/* Floating AcadTrack AI chat panel */}
+      {/* Floating AI Chat Panel */}
       {isAIChatOpen && (
         <div
           style={{
