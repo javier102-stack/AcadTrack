@@ -1,26 +1,22 @@
 const express = require('express');
 const router = express.Router();
 const Note = require('../models/Note');
-
-// Middleware to check authentication (similar to your existing auth checks)
-const isAuthenticated = (req, res, next) => {
-  if (req.session && req.session.userId) return next(); // Adjust based on your auth setup
-  // If using passport or token-based auth, verify here
-  next(); 
-};
+const authMiddleware = require('../middleware/authMiddleware'); // 👈 Import your actual cookie auth middleware
 
 // GET all notes for the logged-in user
-router.get('/', async (req, res) => {
+router.get('/', authMiddleware, async (req, res) => {
   try {
     const notes = await Note.find({ userId: req.user._id }).sort({ updatedAt: -1 });
+    console.log("User Details", notes);
     res.json(notes);
   } catch (err) {
+    console.error(err); // 👈 Check your terminal for the exact error log if it still fails
     res.status(500).json({ message: 'Error fetching notes' });
   }
 });
 
 // POST (Create a new note)
-router.post('/', async (req, res) => {
+router.post('/', authMiddleware, async (req, res) => {
   try {
     const newNote = new Note({
       userId: req.user._id,
@@ -36,7 +32,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT (Update/Save an existing note)
-router.put('/:id', async (req, res) => {
+router.put('/:id', authMiddleware, async (req, res) => {
   try {
     const updatedNote = await Note.findOneAndUpdate(
       { _id: req.params.id, userId: req.user._id },
@@ -55,7 +51,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE a note
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authMiddleware, async (req, res) => {
   try {
     await Note.findOneAndDelete({ _id: req.params.id, userId: req.user._id });
     res.json({ message: 'Note deleted successfully' });

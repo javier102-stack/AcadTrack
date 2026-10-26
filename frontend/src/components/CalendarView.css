@@ -200,3 +200,35 @@
 }
 .calendar-notes-area.light { border: 1px solid #ffe08a; background: #FFFDF5; }
 .calendar-notes-area.dark { border: 1px solid #3e5066; background: #1E293B; }
+
+/* Responsive Enhancements for CalendarView.css */
+@media (max-width: 900px) {
+  .calendar-grid-container {
+    grid-template-columns: 1fr; /* Stack calendar box and sidebar */
+  }
+
+  .calendar-sidebar {
+    flex-direction: column-reverse; /* Put notes below interactive controls */
+  }
+}
+
+@media (max-width: 600px) {
+  .calendar-day-cell, .calendar-empty-cell {
+    min-height: 55px; /* Shorter cells for mobile display */
+    padding: 3px;
+  }
+
+  .calendar-day-number {
+    font-size: 10px;
+  }
+
+  .calendar-task-item {
+    font-size: 8px;
+    padding: 2px 3px;
+  }
+
+  .calendar-day-label {
+    padding: 8px 2px;
+    font-size: 10px;
+  }
+}

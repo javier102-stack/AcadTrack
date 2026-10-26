@@ -420,3 +420,89 @@
   gap: 4px;
   align-items: center;
 }
+
+/* --- FIXED MOBILE TABLE RESPONSIVE STYLES --- */
+@media (max-width: 868px) {
+  .academics-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .academics-sidebar {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    width: 100%;
+  }
+
+  .academics-main {
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+
+  /* Enables clean horizontal swipe scrolling for the table container */
+  .table-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 12px;
+    box-sizing: border-box;
+  }
+
+  /* Remove fixed layout so columns expand naturally and support horizontal scrolling */
+  .academics-table {
+    width: 100%;
+    min-width: 700px; /* Ensures all table headers stay side-by-side */
+    table-layout: auto !important; 
+  }
+
+  /* Prevent awkward single-letter line breaks on table headers & text */
+  .th-cell {
+    white-space: nowrap;
+    padding: 10px 12px;
+  }
+
+  .td-cell {
+    white-space: nowrap; /* Keeps content elements aligned horizontally within their row */
+    padding: 12px;
+  }
+
+  /* Allow specific text descriptions to wrap normally instead of crushing columns */
+  .task-title-text, 
+  .task-desc-text {
+    white-space: normal;
+    min-width: 180px; /* Gives the details column breathing room */
+  }
+
+  .academics-top-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .search-container {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .search-box {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .filters-group {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .filter-select {
+    width: 100%;
+  }
+}

@@ -1,9 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { 
-  LayoutDashboard, CheckSquare, Calendar as CalendarIcon, Timer, 
+  LayoutDashboard, CheckSquare, Calendar as CalendarIcon, 
   PlusCircle, Sun, Moon, BookOpen, Bell, AlertCircle, Clock, 
-  CheckCircle2, UserRoundPen, KeyRound, Trash2, LogOut, X, Eye, EyeOff, 
-  PencilIcon
+  CheckCircle2, UserRoundPen, KeyRound, Trash2, LogOut, Menu, X, PencilIcon
 } from 'lucide-react';
 import { EditProfileModal, ChangePasswordModal, DeleteAccountModal } from './ProfileModals';
 import './Navbar.css';
@@ -25,6 +24,7 @@ export default function Navbar({
 }) {
   const [showNotifications, setShowNotifications] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [editProfileOpen, setEditProfileOpen] = useState(false);
   const [changePasswordOpen, setChangePasswordOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -94,10 +94,6 @@ export default function Navbar({
 
       if (!response.ok) {
         throw new Error(data.message || "Unable to update profile.");
-      }
-
-      if (!data.user) {
-        throw new Error("The server response did not include updated user information.");
       }
 
       setProfileForm({
@@ -235,7 +231,7 @@ export default function Navbar({
           <h2 className={`navbar-title ${modeClass}`}>AcadTrack</h2>
         </div>
         
-        {/* Navigation Tabs */}
+        {/* Desktop Navigation Tabs */}
         <nav className={`navbar-nav-container ${modeClass}`}>
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -257,7 +253,7 @@ export default function Navbar({
           
           {/* Add Task Button */}
           <button onClick={() => setIsAddTaskOpen(true)} className="navbar-add-task-btn">
-            <PlusCircle size={16} /> Add Task
+            <PlusCircle size={16} /> <span>Add Task</span>
           </button>
 
           {/* NOTIFICATION BELL ICON */}
@@ -318,7 +314,7 @@ export default function Navbar({
             {darkMode ? <Sun size={18} color="#FFE08A" /> : <Moon size={18} color="#4B7B9D" />}
           </button>
 
-          {/* Clickable Profile Dropdown */}
+          {/* Profile Dropdown Trigger */}
           <div style={{ position: "relative" }}>
             <button
               onClick={() => setProfileOpen(!profileOpen)}
@@ -340,15 +336,6 @@ export default function Navbar({
                   .join("")
                   .slice(0, 2)
                   .toUpperCase()}
-              </div>
-
-              <div>
-                <span className={`navbar-profile-name ${modeClass}`}>
-                  {user?.name || "Student"}
-                </span>
-                <small className={`navbar-profile-role ${modeClass}`}>
-                  {user?.username ? `@${user.username}` : "Student"}
-                </small>
               </div>
             </button>
 
@@ -375,36 +362,12 @@ export default function Navbar({
                   }}
                 >
                   <strong style={{ color: textColor, fontSize: "13px" }}>
-                    Account
+                    {user?.name || "Student"}
                   </strong>
-                  <div style={{ color: mutedColor, fontSize: "12px", marginTop: "4px" }}>
+                  <div style={{ color: mutedColor, fontSize: "12px", marginTop: "2px" }}>
                     {user?.username ? `@${user.username}` : ""}
                   </div>
                 </div>
-
-                <button
-                  onClick={() => {
-                    setProfileOpen(false);
-                    setDeleteOpen(true);
-                    setError("");
-                  }}
-                  style={{
-                    width: "100%",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "10px",
-                    padding: "10px",
-                    border: "none",
-                    borderRadius: "6px",
-                    background: "transparent",
-                    color: "#dc2626",
-                    cursor: "pointer",
-                    textAlign: "left",
-                  }}
-                >
-                  <Trash2 size={16} />
-                  Delete Account
-                </button>
 
                 <button
                   onClick={() => {
@@ -432,8 +395,7 @@ export default function Navbar({
                     textAlign: "left",
                   }}
                 >
-                  <UserRoundPen size={16} />
-                  Edit Profile
+                  <UserRoundPen size={16} /> Edit Profile
                 </button>
 
                 <button
@@ -462,8 +424,30 @@ export default function Navbar({
                     textAlign: "left",
                   }}
                 >
-                  <KeyRound size={16} />
-                  Change Password
+                  <KeyRound size={16} /> Change Password
+                </button>
+
+                <button
+                  onClick={() => {
+                    setProfileOpen(false);
+                    setDeleteOpen(true);
+                    setError("");
+                  }}
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    padding: "10px",
+                    border: "none",
+                    borderRadius: "6px",
+                    background: "transparent",
+                    color: "#dc2626",
+                    cursor: "pointer",
+                    textAlign: "left",
+                  }}
+                >
+                  <Trash2 size={16} /> Delete Account
                 </button>
 
                 <button
@@ -485,17 +469,56 @@ export default function Navbar({
                     textAlign: "left",
                   }}
                 >
-                  <LogOut size={16} />
-                  Logout
+                  <LogOut size={16} /> Logout
                 </button>
               </div>
             )}
           </div>
 
+          {/* Hamburger Menu Toggle (Mobile) */}
+          <button 
+            onClick={() => setMobileMenuOpen(true)}
+            className="navbar-hamburger-btn"
+            title="Open Navigation Menu"
+          >
+            <Menu size={22} color={darkMode ? '#f8fafc' : '#1e293b'} />
+          </button>
         </div>
       </header>
 
-      {/* Render Modals Outside Header Container */}
+      {/* Mobile Drawer Menu */}
+      {mobileMenuOpen && (
+        <div className="navbar-mobile-overlay" onClick={() => setMobileMenuOpen(false)} style={{ display: 'block' }} />
+      )}
+      <aside className={`navbar-mobile-drawer ${modeClass} ${mobileMenuOpen ? 'open' : ''}`}>
+        <div className="navbar-mobile-header">
+          <h3 className={`navbar-title ${modeClass}`}>Navigation</h3>
+          <button onClick={() => setMobileMenuOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+            <X size={20} color={darkMode ? '#f8fafc' : '#1e293b'} />
+          </button>
+        </div>
+
+        <nav className="navbar-mobile-nav">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = activeTab === item.id;
+            return (
+              <button 
+                key={item.id}
+                onClick={() => {
+                  setActiveTab(item.id);
+                  setMobileMenuOpen(false);
+                }} 
+                className={`navbar-mobile-nav-btn ${isActive ? 'active' : `inactive ${modeClass}`}`}
+              >
+                <Icon size={18} /> {item.label}
+              </button>
+            );
+          })}
+        </nav>
+      </aside>
+
+      {/* Profile Modals */}
       <EditProfileModal
         editProfileOpen={editProfileOpen}
         setEditProfileOpen={setEditProfileOpen}

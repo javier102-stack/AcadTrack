@@ -121,7 +121,7 @@ export default function Login({ onAuthenticated }) {
                     onChange={(e) =>
                       setUsername(e.target.value.toLowerCase())
                     }
-                    placeholder="Choose a username"
+                    placeholder="Create a username"
                     minLength={3}
                     maxLength={30}
                     pattern="[a-z0-9_]+"

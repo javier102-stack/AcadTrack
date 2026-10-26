@@ -10,7 +10,8 @@
   // Middleware
   app.use(
     cors({
-      origin: "http://localhost:5173",
+      origin:["http://localhost:5173",
+      "http://localhost:4173", "http://localhost", "http://192.168.100.23", "https://8psp139c-4173.asse.devtunnels.ms"],
       credentials: true,
     })
   );
@@ -39,7 +40,7 @@
     .then(() => {
       console.log("MongoDB connected successfully!");
 
-      app.listen(process.env.PORT, () => {
+      app.listen(process.env.PORT, "0.0.0.0", () => {
         console.log(
           `Server running on port ${process.env.PORT}`
         );

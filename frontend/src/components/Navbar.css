@@ -323,3 +323,113 @@
 }
 .navbar-profile-role.light { color: #64748b; }
 .navbar-profile-role.dark { color: #94a3b8; }
+
+/* --- MOBILE NAVIGATION ENHANCEMENTS --- */
+.navbar-hamburger-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  align-items: center;
+  justify-content: center;
+}
+
+.navbar-mobile-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+}
+
+.navbar-mobile-drawer {
+  position: fixed;
+  top: 0;
+  right: -280px;
+  width: 260px;
+  height: 100vh;
+  padding: 24px 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  z-index: 1001;
+  transition: transform 0.3s ease-in-out;
+}
+.navbar-mobile-drawer.open {
+  transform: translateX(-280px);
+}
+.navbar-mobile-drawer.light {
+  background: #ffffff;
+  border-left: 1px solid #ebf4fb;
+}
+.navbar-mobile-drawer.dark {
+  background: #1e293b;
+  border-left: 1px solid #334155;
+}
+
+.navbar-mobile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-mobile-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.navbar-mobile-nav-btn {
+  border: none;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+}
+.navbar-mobile-nav-btn.active {
+  background: #ffe08a;
+  color: #1e293b;
+  font-weight: 700;
+}
+.navbar-mobile-nav-btn.inactive.light { color: #5a6b7c; }
+.navbar-mobile-nav-btn.inactive.dark { color: #94a3b8; }
+
+/* Responsive Breakpoints */
+@media (max-width: 868px) {
+  .navbar-header {
+    padding: 0 16px;
+    height: 60px;
+  }
+
+  .navbar-nav-container {
+    display: none; /* Hide desktop horizontal menu */
+  }
+
+  .navbar-hamburger-btn {
+    display: flex;
+  }
+
+  .navbar-add-task-btn span {
+    display: none; /* Hide label on mobile to save space */
+  }
+
+  .navbar-add-task-btn {
+    padding: 8px;
+    border-radius: 8px;
+  }
+
+  .navbar-dropdown {
+    right: -60px;
+    width: 290px;
+  }
+}

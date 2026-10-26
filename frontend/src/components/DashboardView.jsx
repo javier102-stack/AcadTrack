@@ -8,6 +8,28 @@ export default function DashboardView({
   setIsAddTaskOpen, setToDoSubFilter, setActiveTab, getSubjectColor, getPriorityColor 
 }) {
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [user, setUser] = useState(null); // 👈 Added user state to fix the ReferenceError
+
+  // Fetch logged-in user details from the backend
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await fetch('/api/auth/me', {
+          method: 'GET',
+          credentials: 'include', // 👈 Sends the HTTP-only cookie for authentication
+        });
+        const data = await response.json();
+        
+        if (response.ok) {
+          setUser(data.user);
+        }
+      } catch (err) {
+        console.error('Failed to fetch user profile:', err);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -34,7 +56,7 @@ export default function DashboardView({
       {/* Main Welcome Banner */}
       <div className="welcome-banner">
         <div className="banner-content-left">
-          <h1 className="banner-heading">Welcome back, Javier! 👋</h1>
+          <h1 className="banner-heading">Welcome back, {user?.name || 'Student'}!</h1>
           <p className="banner-sub">Stay organized and reach your academic goals today!</p>
         </div>
         

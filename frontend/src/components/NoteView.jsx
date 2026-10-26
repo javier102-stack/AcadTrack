@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { 
-  Bold, Italic, Highlighter, List, Plus, Trash2, Link, CheckSquare, 
-  Play, Pause, RotateCcw, Timer as TimerIcon, Sparkles 
+  Bold, Italic, Highlighter, List, Plus, Trash2, Edit2, Link, CheckSquare, 
+  Play, Pause, RotateCcw, Timer as TimerIcon, Sparkles, Maximize2, Minimize2, Save 
 } from 'lucide-react';
 import './NoteView.css';
 
@@ -21,24 +21,42 @@ export default function NotesView({
   setIsPomodoroActive = () => {}
 }) {
   // Notes States
-  const [notes, setNotes] = useState([
-    {
-      id: 1,
-      title: 'Exam Preparation Strategy',
-      content: 'Make sure to review <b>Chapter 4</b> and practice previous quizzes.',
-      linkedTaskId: tasks[0]?._id || null,
-      updatedAt: new Date().toLocaleDateString(),
-    },
-  ]);
-
-  const [activeNoteId, setActiveNoteId] = useState(notes[0]?.id || null);
-  const activeNote = notes.find((n) => n.id === activeNoteId);
+  const [notes, setNotes] = useState([]);
+  const [activeNoteId, setActiveNoteId] = useState(null);
+  const activeNote = notes.find((n) => n._id === activeNoteId);
   const [isAiLoading, setIsAiLoading] = useState(false);
+  const [isFullScreen, setIsFullScreen] = useState(false);
+  const [editingNoteId, setEditingNoteId] = useState(null);
+  const [tempTitle, setTempTitle] = useState('');
+  const [isSaving, setIsSaving] = useState(false); // 👈 Added save state for UI feedback
 
-  // Ref for the content editable div
   const editorRef = useRef(null);
-  // Ref for auto-save debouncing
   const saveTimeoutRef = useRef(null);
+
+  // 1. Fetch notes from MongoDB on component mount
+  useEffect(() => {
+    const fetchNotes = async () => {
+      try {
+        const response = await fetch('/api/notes', {
+          method: 'GET',
+          credentials: 'include',
+        });
+        const data = await response.json();
+        if (response.ok) {
+          setNotes(data);
+          if (data.length > 0) {
+            setActiveNoteId(data[0]._id);
+          }
+        } else {
+          console.error(data.message);
+        }
+      } catch (err) {
+        console.error('Failed to fetch notes:', err);
+      }
+    };
+
+    fetchNotes();
+  }, []);
 
   // Sync DOM content ONLY when switching active notes
   useEffect(() => {
@@ -47,57 +65,130 @@ export default function NotesView({
     }
   }, [activeNoteId]);
 
-  const handleCreateNote = () => {
-    const newNote = {
-      id: Date.now(),
-      title: 'Untitled Note',
-      content: '',
-      linkedTaskId: '',
-      updatedAt: new Date().toLocaleDateString(),
-    };
-    setNotes([newNote, ...notes]);
-    setActiveNoteId(newNote.id);
-  };
+  // 2. Create note in MongoDB
+  const handleCreateNote = async () => {
+    try {
+      const response = await fetch('/api/notes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          title: 'Untitled Note',
+          content: '',
+          linkedTaskId: null
+        })
+      });
 
-  const handleDeleteNote = (id, e) => {
-    e.stopPropagation();
-    const filtered = notes.filter((n) => n.id !== id);
-    setNotes(filtered);
-    if (activeNoteId === id) {
-      setActiveNoteId(filtered[0]?.id || null);
+      const newNote = await response.json();
+      if (!response.ok) throw new Error(newNote.message);
+
+      setNotes([newNote, ...notes]);
+      setActiveNoteId(newNote._id);
+    } catch (err) {
+      console.error('Failed to create note:', err);
     }
   };
 
+  // 3. Delete note from MongoDB
+  const handleDeleteNote = async (id, e) => {
+    e.stopPropagation();
+    try {
+      const response = await fetch(`/api/notes/${id}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+
+      if (!response.ok) throw new Error('Failed to delete note');
+
+      const filtered = notes.filter((n) => n._id !== id);
+      setNotes(filtered);
+      if (activeNoteId === id) {
+        setActiveNoteId(filtered[0]?._id || null);
+      }
+    } catch (err) {
+      console.error('Failed to delete note:', err);
+    }
+  };
+
+  // 4. Explicit Manual Save Function
+  const handleManualSave = async () => {
+    if (!activeNote) return;
+    setIsSaving(true);
+
+    try {
+      const currentContent = editorRef.current ? editorRef.current.innerHTML : activeNote.content;
+      
+      const response = await fetch(`/api/notes/${activeNote._id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          title: activeNote.title,
+          content: currentContent,
+          linkedTaskId: activeNote.linkedTaskId
+        })
+      });
+
+      const updatedNote = await response.json();
+      if (!response.ok) throw new Error('Failed to save note');
+
+      setNotes(notes.map(n => n._id === updatedNote._id ? updatedNote : n));
+      setTimeout(() => setIsSaving(false), 600); // Brief feedback delay
+    } catch (err) {
+      console.error('Failed to save note:', err);
+      setIsSaving(false);
+      alert('Error saving note to database.');
+    }
+  };
+
+  // Local state update helper (with automatic background debounce)
   const handleUpdateActiveNote = (field, value) => {
     setNotes((prevNotes) =>
       prevNotes.map((n) =>
-        n.id === activeNoteId
-          ? { ...n, [field]: value, updatedAt: new Date().toLocaleDateString() }
+        n._id === activeNoteId
+          ? { ...n, [field]: value, updatedAt: new Date().toISOString() }
           : n
       )
     );
-  };
-
-  // Debounced note content saver: preserves browser caret position while typing
-  const handleEditorInput = () => {
-    if (!editorRef.current) return;
-    const updatedHtml = editorRef.current.innerHTML;
 
     if (saveTimeoutRef.current) {
       clearTimeout(saveTimeoutRef.current);
     }
 
-    // Delay React state update so typing isn't interrupted
-    saveTimeoutRef.current = setTimeout(() => {
-      handleUpdateActiveNote('content', updatedHtml);
-    }, 500);
+    // Debounced automatic background sync
+    saveTimeoutRef.current = setTimeout(async () => {
+      const currentNote = notes.find(n => n._id === activeNoteId);
+      if (!currentNote) return;
+
+      try {
+        const payload = {
+          title: field === 'title' ? value : currentNote.title,
+          content: field === 'content' ? value : currentNote.content,
+          linkedTaskId: field === 'linkedTaskId' ? value : currentNote.linkedTaskId
+        };
+
+        await fetch(`/api/notes/${activeNoteId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(payload)
+        });
+      } catch (err) {
+        console.error('Background sync failed:', err);
+      }
+    }, 1000);
+  };
+
+  const handleEditorInput = () => {
+    if (!editorRef.current) return;
+    handleUpdateActiveNote('content', editorRef.current.innerHTML);
   };
 
   const applyFormatting = (command, value = null) => {
     document.execCommand(command, false, value);
   };
 
-  // AI Write / Solve Highlighted Problem feature
+  // AI Write Feature
   const handleAISolve = async () => {
     const selection = window.getSelection();
     const selectedText = selection ? selection.toString().trim() : '';
@@ -109,7 +200,7 @@ export default function NotesView({
 
     setIsAiLoading(true);
     const originalContent = editorRef.current ? editorRef.current.innerHTML : activeNote.content;
-    const loadingHtml = `${originalContent}<br><br><b>🤖 AcadTrack AI Solving "${selectedText}":</b> <i>Thinking...</i>`;
+    const loadingHtml = `${originalContent}<br><br><b>AcadTrack AI Solving:</b> <i>Thinking...</i>`;
     
     if (editorRef.current) editorRef.current.innerHTML = loadingHtml;
 
@@ -136,12 +227,11 @@ export default function NotesView({
       const response = await fetch('/api/ai/study-plan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ prompt: promptPayload }),
       });
 
-      // Read response text first to avoid JSON parsing crashes if backend fails
       const responseText = await response.text();
-      
       let data;
       try {
         data = JSON.parse(responseText);
@@ -154,7 +244,7 @@ export default function NotesView({
       }
 
       const formattedAnswer = data.answer.replace(/\n/g, '<br>');
-      const aiSolution = `<br><br><b>💡 AI Solution for "${selectedText}":</b><br>${formattedAnswer}`;
+      const aiSolution = `<br><br>${formattedAnswer}`;
       
       const finalContent = originalContent + aiSolution;
       if (editorRef.current) editorRef.current.innerHTML = finalContent;
@@ -171,52 +261,141 @@ export default function NotesView({
   const modeClass = darkMode ? 'dark' : 'light';
 
   return (
-    <div className="notes-container" style={{ background: theme.cardBg, color: theme.text, border: `1px solid ${theme.border}` }}>
+    <div className={`notes-container ${isFullScreen ? 'fullscreen' : ''}`} style={{ background: theme.cardBg, color: theme.text, border: `1px solid ${theme.border}` }}>
       
       {/* Sidebar */}
-      <aside className={`notes-sidebar ${modeClass}`}>
-        <div className="notes-sidebar-header">
-          <h3>My Notes</h3>
-          <button onClick={handleCreateNote} className="notes-add-btn" title="Create New Note">
-            <Plus size={18} /> New
-          </button>
-        </div>
+      {!isFullScreen && (
+        <aside className={`notes-sidebar ${modeClass}`}>
+          <div className="notes-sidebar-header">
+            <h3>My Notes</h3>
+            <button onClick={handleCreateNote} className="notes-add-btn" title="Create New Note">
+              <Plus size={18} /> New
+            </button>
+          </div>
 
-        <div className="notes-list">
-          {notes.length === 0 ? (
-            <p className="notes-empty-msg">No notes yet. Click New to create one!</p>
-          ) : (
-            notes.map((note) => {
-              const linkedTask = tasks.find((t) => t._id === note.linkedTaskId);
-              return (
-                <div
-                  key={note.id}
-                  onClick={() => setActiveNoteId(note.id)}
-                  className={`notes-card ${note.id === activeNoteId ? 'active' : ''} ${modeClass}`}
-                >
-                  <div className="notes-card-title-row">
-                    <span className="notes-card-title">{note.title || 'Untitled Note'}</span>
-                    <button onClick={(e) => handleDeleteNote(note.id, e)} className="notes-delete-btn">
-                      <Trash2 size={14} />
-                    </button>
-                  </div>
-                  <small className="notes-card-date">{note.updatedAt}</small>
+          <div className="notes-list">
+            {notes.length === 0 ? (
+              <p className="notes-empty-msg">No notes yet. Click New to create one!</p>
+            ) : (
+              notes.map((note) => {
+                const linkedTask = tasks.find((t) => t._id === note.linkedTaskId);
+                const isEditing = editingNoteId === note._id;
 
-                  {linkedTask && (
-                    <div className="notes-card-task-tag">
-                      <CheckSquare size={12} /> {linkedTask.title}
+                return (
+                  <div
+                    key={note._id}
+                    onClick={() => {
+                      if (!isEditing) setActiveNoteId(note._id);
+                    }}
+                    className={`notes-card ${note._id === activeNoteId ? 'active' : ''} ${modeClass}`}
+                  >
+                    <div className="notes-card-title-row">
+                      {isEditing ? (
+                        <input
+                          type="text"
+                          value={tempTitle}
+                          autoFocus
+                          onChange={(e) => setTempTitle(e.target.value)}
+                          onBlur={() => {
+                            if (tempTitle.trim()) {
+                              handleUpdateActiveNote('title', tempTitle);
+                            }
+                            setEditingNoteId(null);
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') e.target.blur();
+                          }}
+                          style={{ flex: 1, padding: '2px 4px', fontSize: '0.9rem', borderRadius: '4px', border: '1px solid #3b82f6', outline: 'none' }}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      ) : (
+                        <span className="notes-card-title">{note.title || 'Untitled Note'}</span>
+                      )}
+
+                      <div style={{ display: 'flex', gap: '2px' }} onClick={(e) => e.stopPropagation()}>
+                        <button 
+                          onClick={() => {
+                            setEditingNoteId(note._id);
+                            setTempTitle(note.title);
+                            setActiveNoteId(note._id);
+                          }} 
+                          className="notes-edit-btn"
+                          title="Edit Title"
+                        >
+                          <Edit2 size={13} />
+                        </button>
+                        <button onClick={(e) => handleDeleteNote(note._id, e)} className="notes-delete-btn" title="Delete Note">
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
                     </div>
-                  )}
-                </div>
-              );
-            })
-          )}
-        </div>
-      </aside>
+                    <small className="notes-card-date">
+                      {new Date(note.updatedAt || note.createdAt).toLocaleDateString()}
+                    </small>
+
+                    {linkedTask && (
+                      <div className="notes-card-task-tag">
+                        <CheckSquare size={12} /> {linkedTask.title}
+                      </div>
+                    )}
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </aside>
+      )}
 
       {/* Main Workspace */}
       <main className="notes-editor-area">
         
+        <div className="notes-top-action-bar" style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginBottom: '8px' }}>
+          {/* 👇 New Save Button */}
+          {activeNote && (
+            <button 
+              onClick={handleManualSave}
+              disabled={isSaving}
+              style={{
+                background: isSaving ? '#10b981' : (darkMode ? '#1e293b' : '#f8fafc'),
+                border: '1px solid #cbd5e1',
+                borderRadius: '6px',
+                padding: '6px 14px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                cursor: 'pointer',
+                fontSize: '0.8rem',
+                fontWeight: 600,
+                color: isSaving ? '#ffffff' : (darkMode ? '#f8fafc' : '#334155'),
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <Save size={15} />
+              {isSaving ? 'Saved!' : 'Save Note'}
+            </button>
+          )}
+
+          <button 
+            onClick={() => setIsFullScreen(!isFullScreen)}
+            style={{
+              background: darkMode ? '#1e293b' : '#f8fafc',
+              border: '1px solid #cbd5e1',
+              borderRadius: '6px',
+              padding: '6px 12px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              cursor: 'pointer',
+              fontSize: '0.8rem',
+              fontWeight: 600,
+              color: darkMode ? '#f8fafc' : '#334155'
+            }}
+          >
+            {isFullScreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+            {isFullScreen ? 'Exit Full Screen' : 'Full Screen'}
+          </button>
+        </div>
+
         {/* Timer Bar */}
         <div className={`notes-timer-bar ${modeClass}`}>
           <div className="notes-timer-left">
@@ -258,7 +437,6 @@ export default function NotesView({
 
         {activeNote ? (
           <>
-            {/* Header & Task Linker */}
             <div className="notes-editor-header">
               <input
                 type="text"
@@ -268,14 +446,14 @@ export default function NotesView({
                 onChange={(e) => handleUpdateActiveNote('title', e.target.value)}
               />
 
-              <div className="notes-task-linker">
+              <div className="notes-task-linker">Connect task
                 <Link size={16} className="notes-link-icon" />
                 <select
                   value={activeNote.linkedTaskId || ''}
-                  onChange={(e) => handleUpdateActiveNote('linkedTaskId', e.target.value)}
+                  onChange={(e) => handleUpdateActiveNote('linkedTaskId', e.target.value || null)}
                   className={`notes-task-select ${modeClass}`}
                 >
-                  <option value="">Link to Task (Optional)...</option>
+                  <option value="">Link to Task (Optional)</option>
                   {tasks.map((t) => (
                     <option key={t._id} value={t._id}>
                       {t.title} {t.subject ? `(${t.subject})` : ''}
@@ -285,7 +463,6 @@ export default function NotesView({
               </div>
             </div>
 
-            {/* Formatting Toolbar */}
             <div className={`notes-toolbar ${modeClass}`}>
               <button onClick={() => applyFormatting('bold')} title="Bold">
                 <Bold size={16} />
@@ -300,7 +477,6 @@ export default function NotesView({
                 <List size={16} />
               </button>
 
-              {/* AI Write Button */}
               <button 
                 onClick={handleAISolve} 
                 disabled={isAiLoading}
@@ -312,7 +488,6 @@ export default function NotesView({
               </button>
             </div>
 
-            {/* Content Editable Area (Uncontrolled to fix caret jumping) */}
             <div
               ref={editorRef}
               contentEditable
