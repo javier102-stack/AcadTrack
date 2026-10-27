@@ -1,4 +1,4 @@
-import { X, Trash2 } from 'lucide-react';
+import { X, Trash2, Calendar } from 'lucide-react';
 import './TaskModals.css';
 
 export function AddTaskModal({
@@ -62,13 +62,16 @@ export function AddTaskModal({
           <div className="form-grid-2">
             <div className="form-field">
               <label className="form-label" style={{ color: theme.subText }}>Due Date</label>
-              <input 
-                type="date" 
-                value={dueDate} 
-                onChange={(e) => setDueDate(e.target.value)} 
-                className="form-input" 
-                style={{ border: `1px solid ${theme.border}`, background: theme.cardBg, color: theme.text }}
-              />
+              <div className="date-input-wrapper">
+                <input 
+                  type="date" 
+                  value={dueDate} 
+                  onChange={(e) => setDueDate(e.target.value)} 
+                  className="form-input date-input" 
+                  style={{ border: `1px solid ${theme.border}`, background: theme.cardBg, color: theme.text }}
+                />
+                <Calendar size={16} className="custom-calendar-icon" color={theme.subText || '#888'} />
+              </div>
             </div>
             <div className="form-field">
               <label className="form-label" style={{ color: theme.subText }}>Priority</label>
@@ -161,13 +164,16 @@ export function EditTaskModal({ isEditing, setIsEditing, currentTask, setCurrent
           <div className="form-grid-2">
             <div className="form-field">
               <label className="form-label" style={{ color: theme.subText }}>Due Date</label>
-              <input 
-                type="date" 
-                value={currentTask.dueDate || ''} 
-                onChange={(e) => setCurrentTask({ ...currentTask, dueDate: e.target.value })} 
-                className="form-input" 
-                style={{ border: `1px solid ${theme.border}`, background: theme.cardBg, color: theme.text }}
-              />
+              <div className="date-input-wrapper">
+                <input 
+                  type="date" 
+                  value={currentTask.dueDate || ''} 
+                  onChange={(e) => setCurrentTask({ ...currentTask, dueDate: e.target.value })} 
+                  className="form-input date-input" 
+                  style={{ border: `1px solid ${theme.border}`, background: theme.cardBg, color: theme.text }}
+                />
+                <Calendar size={16} className="custom-calendar-icon" color={theme.subText || '#888'} />
+              </div>
             </div>
             <div className="form-field">
               <label className="form-label" style={{ color: theme.subText }}>Priority</label>

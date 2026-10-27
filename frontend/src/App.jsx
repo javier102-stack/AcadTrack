@@ -11,6 +11,7 @@ import AIAssistant from './components/AIAssistant';
 import { AddTaskModal, EditTaskModal, DeleteModal } from './components/TaskModals';
 import Login from './Login';
 import './App.css';
+import { BookOpen } from 'lucide-react';
 
 const API_URL = 'http://localhost:5000/api/tasks';
 const AUTH_URL = 'http://localhost:5000/api/auth';
@@ -126,7 +127,6 @@ function App() {
     if (pomodoroSeconds <= 0) {
       const timeout = setTimeout(() => {
         setIsPomodoroActive(false);
-        showToast('🔔 Pomodoro session completed! Take a break.');
       }, 0);
       return () => clearTimeout(timeout);
     }
@@ -170,7 +170,6 @@ function App() {
     try {
       await axios.put(`${API_URL}/${id}`, { completed: !currentStatus });
       fetchTasksData();
-      showToast(currentStatus ? '🔄 Marked as pending' : '🎉 Marked as completed!');
     } catch (error) { console.error('Error updating task:', error); }
   };
 
@@ -182,7 +181,6 @@ function App() {
       await axios.delete(`${API_URL}/${taskToDelete._id}`);
       setIsDeleting(false); setTaskToDelete(null);
       fetchTasksData();
-      showToast('🗑️ Entry removed successfully.');
     } catch (error) { console.error('Error deleting task:', error); }
   };
 
@@ -207,7 +205,6 @@ function App() {
       });
       setIsEditing(false); setCurrentTask(null);
       fetchTasksData();
-      showToast('✏️ Task details updated!');
     } catch (error) { console.error('Error updating task:', error); }
   };
 
@@ -433,7 +430,7 @@ function App() {
           zIndex: 3000,
         }}
       >
-        {isAIChatOpen ? '×' : '✦'}
+        {isAIChatOpen ? '×' : <BookOpen size={18} />}
       </button>
 
       {/* Floating AI Chat Panel */}

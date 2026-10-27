@@ -211,7 +211,7 @@ export default function Navbar({
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'academics', label: 'To-dos', icon: CheckSquare },
     { id: 'calendar', label: 'Calendar', icon: CalendarIcon },
-    { id: 'notes', label: 'Note&Study', icon: PencilIcon }
+    { id: 'notes', label: 'Study Notes', icon: PencilIcon }
   ];
 
   const modeClass = darkMode ? 'dark' : 'light';

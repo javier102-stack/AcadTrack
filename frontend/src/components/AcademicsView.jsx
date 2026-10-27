@@ -247,7 +247,7 @@ export default function AcademicsView({
                         </td>
                         <td className="td-cell">
                           <span className="priority-pill" style={{ color: getPriorityColor(task.priority), background: `${getPriorityColor(task.priority)}15` }}>
-                            🔥 {task.priority}
+                          {task.priority}
                           </span>
                         </td>
                         <td className="td-cell due-date-cell" style={{ color: statusBadge?.color || theme.subText }}>
@@ -306,7 +306,7 @@ export default function AcademicsView({
                           </span>
                         </div>
                         <span className="priority-pill" style={{ color: getPriorityColor(task.priority), background: `${getPriorityColor(task.priority)}15` }}>
-                          🔥 {task.priority}
+                          {task.priority}
                         </span>
                       </div>
                       <h3 className={`grid-card-title ${task.completed ? 'task-title-completed' : ''}`} style={{ color: theme.text }}>
@@ -334,7 +334,7 @@ export default function AcademicsView({
                           </span>
                         </div>
                         <div className="grid-card-actions">
-                          <button onClick={() => toggleComplete(task._id, task.completed)} className="action-btn" title={task.completed ? "Mark Pending" : "Mark Complete"}>
+                          <button onClick={() => toggleComplete(task._id, task.completed)} className="action-btn" title={task.completed ? "Mark " : "Mark Complete"}>
                             <CheckCircle size={16} color={task.completed ? '#10b981' : '#94a3b8'} />
                           </button>
                           <button onClick={() => openEditModal(task)} className="action-btn" title="Edit Task">

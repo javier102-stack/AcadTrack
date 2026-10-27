@@ -28,10 +28,62 @@ export default function NotesView({
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [editingNoteId, setEditingNoteId] = useState(null);
   const [tempTitle, setTempTitle] = useState('');
-  const [isSaving, setIsSaving] = useState(false); // 👈 Added save state for UI feedback
+  const [isSaving, setIsSaving] = useState(false);
 
   const editorRef = useRef(null);
   const saveTimeoutRef = useRef(null);
+  const alarmIntervalRef = useRef(null); // Reference para sa 10-sec ringtone/alarm
+
+  // Function para sa pagtugtog sa Ringtone/Alarm (mga 10 seconds ang gidugayon)
+  const playAlarmSound = () => {
+    try {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      let beepCount = 0;
+
+      // Mag-beep matag 1 segundo sa sulod sa 10 ka segundos (10 ka beses)
+      alarmIntervalRef.current = setInterval(() => {
+        if (beepCount >= 10) {
+          clearInterval(alarmIntervalRef.current);
+          return;
+        }
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5 note
+
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.5);
+
+        beepCount++;
+      }, 1000);
+    } catch (e) {
+      console.error('Audio Context Error:', e);
+    }
+  };
+
+  // Hunongon ang alarm kung i-restart o i-pause/manipulate ang timer
+  const stopAlarmSound = () => {
+    if (alarmIntervalRef.current) {
+      clearInterval(alarmIntervalRef.current);
+      alarmIntervalRef.current = null;
+    }
+  };
+
+  // Monitor kung ang timer nahuman na (0 na ang seconds ug aktibo pa)
+  useEffect(() => {
+    if (pomodoroSeconds === 0 && isPomodoroActive) {
+      setIsPomodoroActive(false);
+      playAlarmSound(); // Pagtugtog sa ringtone nga 10 seconds
+    }
+  }, [pomodoroSeconds, isPomodoroActive]);
 
   // 1. Fetch notes from MongoDB on component mount
   useEffect(() => {
@@ -58,14 +110,12 @@ export default function NotesView({
     fetchNotes();
   }, []);
 
-  // Sync DOM content ONLY when switching active notes
   useEffect(() => {
     if (editorRef.current && activeNote) {
       editorRef.current.innerHTML = activeNote.content || '';
     }
   }, [activeNoteId]);
 
-  // 2. Create note in MongoDB
   const handleCreateNote = async () => {
     try {
       const response = await fetch('/api/notes', {
@@ -89,7 +139,6 @@ export default function NotesView({
     }
   };
 
-  // 3. Delete note from MongoDB
   const handleDeleteNote = async (id, e) => {
     e.stopPropagation();
     try {
@@ -110,7 +159,6 @@ export default function NotesView({
     }
   };
 
-  // 4. Explicit Manual Save Function
   const handleManualSave = async () => {
     if (!activeNote) return;
     setIsSaving(true);
@@ -133,7 +181,7 @@ export default function NotesView({
       if (!response.ok) throw new Error('Failed to save note');
 
       setNotes(notes.map(n => n._id === updatedNote._id ? updatedNote : n));
-      setTimeout(() => setIsSaving(false), 600); // Brief feedback delay
+      setTimeout(() => setIsSaving(false), 600);
     } catch (err) {
       console.error('Failed to save note:', err);
       setIsSaving(false);
@@ -141,7 +189,6 @@ export default function NotesView({
     }
   };
 
-  // Local state update helper (with automatic background debounce)
   const handleUpdateActiveNote = (field, value) => {
     setNotes((prevNotes) =>
       prevNotes.map((n) =>
@@ -155,7 +202,6 @@ export default function NotesView({
       clearTimeout(saveTimeoutRef.current);
     }
 
-    // Debounced automatic background sync
     saveTimeoutRef.current = setTimeout(async () => {
       const currentNote = notes.find(n => n._id === activeNoteId);
       if (!currentNote) return;
@@ -188,7 +234,6 @@ export default function NotesView({
     document.execCommand(command, false, value);
   };
 
-  // AI Write Feature
   const handleAISolve = async () => {
     const selection = window.getSelection();
     const selectedText = selection ? selection.toString().trim() : '';
@@ -350,7 +395,6 @@ export default function NotesView({
       <main className="notes-editor-area">
         
         <div className="notes-top-action-bar" style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginBottom: '8px' }}>
-          {/* 👇 New Save Button */}
           {activeNote && (
             <button 
               onClick={handleManualSave}
@@ -406,7 +450,10 @@ export default function NotesView({
 
           <div className="notes-timer-controls">
             <button 
-              onClick={() => setIsPomodoroActive(!isPomodoroActive)} 
+              onClick={() => {
+                stopAlarmSound(); // Ihunong ang alarma kung i-click ang play/pause
+                setIsPomodoroActive(!isPomodoroActive);
+              }} 
               className={`timer-btn ${isPomodoroActive ? 'pause' : 'play'}`}
             >
               {isPomodoroActive ? <Pause size={16} /> : <Play size={16} />}
@@ -414,6 +461,7 @@ export default function NotesView({
             </button>
             <button 
               onClick={() => {
+                stopAlarmSound(); // Ihunong ang alarma kung i-restart
                 setIsPomodoroActive(false);
                 setCustomTimerMinutes(customMinutesInput);
               }} 

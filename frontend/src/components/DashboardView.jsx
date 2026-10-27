@@ -150,12 +150,12 @@ export default function DashboardView({
               <ChevronRight size={16} color="#4B7B9D" />
             </button>
             <button 
-              onClick={() => setActiveTab('study')}
+              onClick={() => setActiveTab('notes')}
               className={`action-btn-item ${darkMode ? 'dark' : 'light'}`}
             >
               <div className="action-btn-content">
                 <Timer size={18} color="#4B7B9D" />
-                <span className={`action-btn-text ${darkMode ? 'dark' : 'light'}`}>Start Focus Session</span>
+                <span className={`action-btn-text ${darkMode ? 'dark' : 'light'}`}>Study Notes</span>
               </div>
               <ChevronRight size={16} color="#4B7B9D" />
             </button>

@@ -1,6 +1,7 @@
 
 import { useState } from 'react';
 import axios from 'axios';
+import { BookOpen } from 'lucide-react';
 import "./AIAssistant.css";
 
 const AI_URL = 'http://localhost:5000/api/ai/study-plan';
@@ -102,14 +103,25 @@ function AIAssistant({ theme, darkMode, tasks = [] }) {
         fontFamily: 'Inter, sans-serif',
       }}
     >
-      <div style={{}}>
-        <h2 style={{ margin: '0 0 6px', fontSize: '20px', color: colors.text }}>
-          <span style={{color: colors.accent}}>✦</span> AcadTrack AI
-        </h2>
-        <p style={{ color: colors.muted, margin: 0, fontSize: '13px' }}>
-          Your AI study companion, powered by Ollama.
-        </p>
-      </div>
+     <div style={{ textAlign: 'center', width: '100%' }}>
+  <h2 style={{ 
+    margin: '0 0 6px', 
+    fontSize: '20px', 
+    color: colors.text, 
+    display: 'flex', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    gap: '8px' 
+  }}>
+    <span style={{ color: colors.accent, display: 'inline-flex', alignItems: 'center' }}>
+      <BookOpen size={18} />
+    </span> 
+    AcadTrack AI
+  </h2>
+  <p style={{ color: colors.muted, margin: 0, fontSize: '13px' }}>
+    Start with your AI study companion
+  </p>
+</div>
 
       <div
         className="acadtrackai-scroll"
