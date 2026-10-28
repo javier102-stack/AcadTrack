@@ -14,9 +14,10 @@ const PORT = process.env.PORT || 5000;
 app.use(
   cors({
     origin: [
-      "https://acad-track-bl8kr2o52-javhost.vercel.app",
+      "https://acad-track-h5jkbvt6w-javhost.vercel.app",
       "http://localhost:5173",
-      "https://acad-track-git-main-javhost.vercel.app/",
+      "https://acad-track-git-main-javhost.vercel.app",
+      "https://acad-track-ochre.vercel.app"
     ],
     credentials: true,
   })
