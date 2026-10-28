@@ -10,7 +10,7 @@
   // Middleware
   app.use(
     cors({
-      origin:["https://acad-track-ochre.vercel.app"],
+      origin: ["https://acad-track-ochre.vercel.app"],
       credentials: true,
     })
   );
