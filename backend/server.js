@@ -1,50 +1,50 @@
-  const cookieParser = require("cookie-parser");
-  const express = require("express");
-  const mongoose = require("mongoose");
-  const cors = require("cors");
-  const notesRouter = require('./routes/notes');  
-  require("dotenv").config();
 
-  const app = express();
+const cookieParser = require("cookie-parser");
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
+const notesRouter = require("./routes/notes");
 
-  // Middleware
-  app.use(
-    cors({
-      origin: ["https://acad-track-bl8kr2o52-javhost.vercel.app/"],
-      credentials: true,
-    })
-  );
-  app.use(express.json());
-  app.use(cookieParser());
+require("dotenv").config();
 
-  // Existing task routes — keep this
-  app.use("/api/tasks", require("./routes/taskRoutes"));
+const app = express();
+const PORT = process.env.PORT || 5000;
 
-  // New authentication routes
-  app.use("/api/auth", require("./routes/authRoutes"));
+// Middleware
+app.use(
+  cors({
+    origin: [
+      "https://acad-track-bl8kr2o52-javhost.vercel.app",
+      "http://localhost:5173",
+    ],
+    credentials: true,
+  })
+);
 
-  app.use("/api/ai", require("./routes/aiRoutes"));
+app.use(express.json());
+app.use(cookieParser());
 
-  // Mount the notes API endpoint
-  app.use('/api/notes', notesRouter);
+// Existing API routes
+app.use("/api/tasks", require("./routes/taskRoutes"));
+app.use("/api/auth", require("./routes/authRoutes"));
+app.use("/api/ai", require("./routes/aiRoutes"));
+app.use("/api/notes", notesRouter);
 
-  // Test route
-  app.get("/", (req, res) => {
-    res.send("Academix backend is running!");
-  });
+// Test route
+app.get("/", (req, res) => {
+  res.send("Academix backend is running!");
+});
 
-  // Connect to MongoDB
-  mongoose
-    .connect(process.env.MONGO_URI)
-    .then(() => {
-      console.log("MongoDB connected successfully!");
+// Connect to MongoDB
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log("MongoDB connected successfully!");
 
-      app.listen(process.env.PORT, "0.0.0.0", () => {
-        console.log(
-          `Server running on port ${process.env.PORT}`
-        );
-      });
-    })
-    .catch((error) => {
-      console.error("MongoDB connection failed:", error.message);
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`Server running on port ${PORT}`);
     });
+  })
+  .catch((error) => {
+    console.error("MongoDB connection failed:", error.message);
+  });
