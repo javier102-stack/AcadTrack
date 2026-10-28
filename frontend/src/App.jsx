@@ -13,8 +13,8 @@ import Login from './Login';
 import './App.css';
 import { BookOpen, BookBookmark } from 'lucide-react';
 
-const API_URL = 'http://localhost:5000/api/tasks';
-const AUTH_URL = 'http://localhost:5000/api/auth';
+const API_URL = `${import.meta.env.VITE_API_URL}/api/tasks`;
+const AUTH_URL = `${import.meta.env.VITE_API_URL}/api/auth`;
 
 axios.defaults.withCredentials = true;
 
