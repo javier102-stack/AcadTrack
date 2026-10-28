@@ -16,6 +16,7 @@ app.use(
     origin: [
       "https://acad-track-bl8kr2o52-javhost.vercel.app",
       "http://localhost:5173",
+      "https://acad-track-git-main-javhost.vercel.app/",
     ],
     credentials: true,
   })
