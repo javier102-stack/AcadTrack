@@ -4,6 +4,7 @@ import { BookOpen, BookBookmark, UserRound, LockKeyhole, Mail, Eye, EyeOff } fro
 import "./Login.css";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+console.log("acad API_URL:", API_URL);
 
 export default function Login({ onAuthenticated }) {
   const [isRegister, setIsRegister] = useState(false);
