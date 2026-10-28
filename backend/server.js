@@ -31,7 +31,7 @@
 
   // Test route
   app.get("/", (req, res) => {
-    res.send("AcadTrack backend is running!");
+    res.send("Academix backend is running!");
   });
 
   // Connect to MongoDB

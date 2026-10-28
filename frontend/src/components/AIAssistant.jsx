@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import axios from 'axios';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, BookBookmark } from 'lucide-react';
 import "./AIAssistant.css";
 
 const AI_URL = 'http://localhost:5000/api/ai/study-plan';
@@ -12,7 +12,7 @@ function AIAssistant({ theme, darkMode, tasks = [] }) {
     {
       role: 'assistant',
       content:
-        'Hi! I’m AcadTrack AI. I can help you create study plans, organize assignments, and prepare for exams. What would you like help with?',
+        'Hi! I’m Academix AI. I can help you create study plans, organize assignments, and prepare for exams. What would you like help with?',
     },
   ]);
   const [loading, setLoading] = useState(false);
@@ -74,11 +74,11 @@ function AIAssistant({ theme, darkMode, tasks = [] }) {
         },
       ]);
     } catch (err) {
-      console.error('AcadTrack AI request failed:', err);
+      console.error('Academix AI request failed:', err);
 
       setError(
         err.response?.data?.message ||
-          'Unable to contact AcadTrack AI. Check that your backend and Ollama are running.'
+          'Unable to contact Academix AI. Check that your backend and Ollama are running.'
       );
     } finally {
       setLoading(false);
@@ -114,9 +114,9 @@ function AIAssistant({ theme, darkMode, tasks = [] }) {
     gap: '8px' 
   }}>
     <span style={{ color: colors.accent, display: 'inline-flex', alignItems: 'center' }}>
-      <BookOpen size={18} />
+      <BookBookmark size={18} />
     </span> 
-    AcadTrack AI
+    Academix AI
   </h2>
   <p style={{ color: colors.muted, margin: 0, fontSize: '13px' }}>
     Start with your AI study companion
@@ -170,7 +170,7 @@ function AIAssistant({ theme, darkMode, tasks = [] }) {
                   fontSize: '12px',
                 }}
               >
-                {message.role === 'user' ? 'You' : 'AcadTrack AI'}
+                {message.role === 'user' ? 'You' : 'Academix AI'}
               </strong>
               {message.content}
             </div>
@@ -179,7 +179,7 @@ function AIAssistant({ theme, darkMode, tasks = [] }) {
 
         {loading && (
           <p style={{ color: colors.muted, fontSize: '13px' }}>
-            AcadTrack AI is thinking...
+            Academix AI is thinking...
           </p>
         )}
       </div>
@@ -212,7 +212,7 @@ function AIAssistant({ theme, darkMode, tasks = [] }) {
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           placeholder="Ask about study plans or assignments..."
-          aria-label="Message AcadTrack AI"
+          aria-label="Message Academix AI"
           rows={2}
           disabled={loading}
           style={{

@@ -11,7 +11,7 @@ import AIAssistant from './components/AIAssistant';
 import { AddTaskModal, EditTaskModal, DeleteModal } from './components/TaskModals';
 import Login from './Login';
 import './App.css';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, BookBookmark } from 'lucide-react';
 
 const API_URL = 'http://localhost:5000/api/tasks';
 const AUTH_URL = 'http://localhost:5000/api/auth';
@@ -413,7 +413,7 @@ function App() {
         type="button"
         onClick={() => setIsAIChatOpen((open) => !open)}
         aria-label={isAIChatOpen ? 'Close AI assistant' : 'Open AI assistant'}
-        title="AcadTrack AI"
+        title="Academix AI"
         style={{
           position: 'fixed',
           right: '24px',
@@ -430,7 +430,7 @@ function App() {
           zIndex: 3000,
         }}
       >
-        {isAIChatOpen ? '×' : <BookOpen size={18} />}
+        {isAIChatOpen ? '×' : <BookBookmark size={18} />}
       </button>
 
       {/* Floating AI Chat Panel */}

@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { 
   LayoutDashboard, CheckSquare, Calendar as CalendarIcon, 
   PlusCircle, Sun, Moon, BookOpen, Bell, AlertCircle, Clock, 
-  CheckCircle2, UserRoundPen, KeyRound, Trash2, LogOut, Menu, X, PencilIcon
+  CheckCircle2, UserRoundPen, KeyRound, Trash2, LogOut, Menu, X, PencilIcon, BookBookmark
 } from 'lucide-react';
 import { EditProfileModal, ChangePasswordModal, DeleteAccountModal } from './ProfileModals';
 import './Navbar.css';
@@ -226,9 +226,9 @@ export default function Navbar({
         {/* Clickable AcadTrack Logo */}
         <div onClick={() => setActiveTab('dashboard')} className="navbar-logo-container">
           <div className="navbar-logo-icon">
-            <BookOpen color="#ffffff" size={20} />
+            <BookBookmark color="#ffffff" size={20} />
           </div>
-          <h2 className={`navbar-title ${modeClass}`}>AcadTrack</h2>
+          <h2 className={`navbar-title ${modeClass}`}>Academix</h2>
         </div>
         
         {/* Desktop Navigation Tabs */}

@@ -245,7 +245,7 @@ export default function NotesView({
 
     setIsAiLoading(true);
     const originalContent = editorRef.current ? editorRef.current.innerHTML : activeNote.content;
-    const loadingHtml = `${originalContent}<br><br><b>AcadTrack AI Solving:</b> <i>Thinking...</i>`;
+    const loadingHtml = `${originalContent}<br><br><b>Academix AI Solving:</b> <i>Thinking...</i>`;
     
     if (editorRef.current) editorRef.current.innerHTML = loadingHtml;
 
@@ -296,7 +296,7 @@ export default function NotesView({
       handleUpdateActiveNote('content', finalContent);
       setIsAiLoading(false);
     } catch (err) {
-      alert(`AcadTrack AI Error: ${err.message}`);
+      alert(`Academix AI Error: ${err.message}`);
       setIsAiLoading(false);
       if (editorRef.current) editorRef.current.innerHTML = originalContent;
       handleUpdateActiveNote('content', originalContent);

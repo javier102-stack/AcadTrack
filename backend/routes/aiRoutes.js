@@ -25,7 +25,7 @@ router.post("/study-plan", async (req, res) => {
           {
             role: "system",
             content:
-              "You are AcadTrack AI, a friendly academic assistant. Help students organize assignments, break work into manageable steps, and create realistic study plans.",
+              "You are Academix AI, a friendly academic assistant. Help students organize assignments, break work into manageable steps, and create realistic study plans.",
           },
           {
             role: "user",
@@ -45,7 +45,7 @@ router.post("/study-plan", async (req, res) => {
       answer: data.message.content,
     });
   } catch (error) {
-    console.error("AcadTrack AI error:", error.message);
+    console.error("Academix AI error:", error.message);
 
     return res.status(502).json({
       message:

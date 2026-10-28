@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { BookOpen, UserRound, LockKeyhole, Mail, Eye, EyeOff } from "lucide-react";
+import { BookOpen, BookBookmark, UserRound, LockKeyhole, Mail, Eye, EyeOff } from "lucide-react";
 import "./Login.css";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
@@ -81,10 +81,10 @@ export default function Login({ onAuthenticated }) {
 
       <form className="login-card" onSubmit={handleSubmit}>
         <div className="login-brand-icon">
-          <BookOpen size={28} strokeWidth={2.2} />
+          <BookBookmark size={28} strokeWidth={2.2} />
         </div>
 
-        <h1>Acad<span>Track</span></h1>
+        <h1>Acad<span>emix</span></h1>
 
         <p className="login-subtitle">
           {isRegister
