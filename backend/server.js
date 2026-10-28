@@ -10,8 +10,7 @@
   // Middleware
   app.use(
     cors({
-      origin:["http://localhost:5173",
-      "http://localhost:4173", "http://localhost", "http://192.168.100.23", "https://acad-track-ochre.vercel.app"],
+      origin:["https://acad-track-ochre.vercel.app"],
       credentials: true,
     })
   );
