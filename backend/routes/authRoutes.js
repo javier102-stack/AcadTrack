@@ -13,10 +13,10 @@ function setAuthCookie(res, userId) {
     { expiresIn: "1d" }
   );
 
-  res.cookie("token", token, {
+    res.cookie("token", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    secure: true,
+    sameSite: "none",
     maxAge: 24 * 60 * 60 * 1000,
     path: "/",
   });
@@ -166,7 +166,7 @@ router.post("/login", async (req, res) => {
         message: "Invalid username/email or password.",
       });
     }
-    
+
     setAuthCookie(res, user._id);
 
     return res.json({
