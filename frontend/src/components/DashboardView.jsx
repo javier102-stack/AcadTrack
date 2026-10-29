@@ -10,11 +10,13 @@ export default function DashboardView({
   const [currentTime, setCurrentTime] = useState(new Date());
   const [user, setUser] = useState(null); // 👈 Added user state to fix the ReferenceError
 
+  const API_URL = `${import.meta.env.VITE_API_URL}`;
+
   // Fetch logged-in user details from the backend
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const response = await fetch('/api/auth/me', {
+        const response = await fetch(`${API_URL}/api/auth/me`, {
           method: 'GET',
           credentials: 'include', // 👈 Sends the HTTP-only cookie for authentication
         });
