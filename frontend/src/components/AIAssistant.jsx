@@ -4,7 +4,7 @@ import axios from 'axios';
 import { BookOpen, BookBookmark } from 'lucide-react';
 import "./AIAssistant.css";
 
-const AI_URL = 'http://localhost:5000/api/ai/study-plan';
+const AI_URL = 'https://acadtrack-pkrg.onrender.com/api/ai/study-plan';
 
 function AIAssistant({ theme, darkMode, tasks = [] }) {
   const [prompt, setPrompt] = useState('');
@@ -78,7 +78,7 @@ function AIAssistant({ theme, darkMode, tasks = [] }) {
 
       setError(
         err.response?.data?.message ||
-          'Unable to contact Academix AI. Check that your backend and Ollama are running.'
+          'Unable to contact Academix AI. Please check your internet connection and try again.'
       );
     } finally {
       setLoading(false);
