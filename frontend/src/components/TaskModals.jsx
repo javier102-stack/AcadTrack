@@ -92,16 +92,16 @@ export function AddTaskModal({
             <label className="form-label" style={{ color: theme.subText }}>Description</label>
             <textarea 
               placeholder="Notes..." 
-              value={description} 
-              onChange={(e) => setDescription(e.target.value)} 
+              value={currentTask.description || ''} 
+              onChange={(e) => setCurrentTask({ ...currentTask, description: e.target.value })} 
               className="form-input form-textarea" 
               style={{ border: `1px solid ${theme.border}`, background: theme.cardBg, color: theme.text }}
             />
           </div>
 
           <div className="form-actions">
-            <button type="button" onClick={() => setIsAddTaskOpen(false)} className="btn-cancel">Cancel</button>
-            <button type="submit" className="btn-submit">Save Task</button>
+            <button type="button" onClick={() => setIsEditing(false)} className="btn-cancel">Cancel</button>
+            <button type="submit" className="btn-submit">Update Entry</button>
           </div>
         </form>
       </div>
