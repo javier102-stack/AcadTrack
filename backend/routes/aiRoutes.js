@@ -1,6 +1,5 @@
 
 const express = require("express");
-
 const router = express.Router();
 
 router.post("/study-plan", async (req, res) => {
@@ -9,42 +8,42 @@ router.post("/study-plan", async (req, res) => {
 
     if (typeof prompt !== "string" || !prompt.trim()) {
       return res.status(400).json({
-        message: "Please enter a question or request.",
+        message: "Please enter a question or request."
       });
     }
 
-    const apiKey = process.env.AI_GATEWAY_API_KEY;
+    const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) {
-      console.error("AI_GATEWAY_API_KEY is missing on the server.");
-
+      console.error("GEMINI_API_KEY is missing.");
       return res.status(500).json({
-        message: "The AI service is not configured yet.",
+        message: "The AI service is not configured yet."
       });
     }
 
     const response = await fetch(
-      "https://ai-gateway.vercel.sh/v1/chat/completions",
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent",
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${apiKey}`,
           "Content-Type": "application/json",
+          "x-goog-api-key": apiKey
         },
         body: JSON.stringify({
-          model: "openai/gpt-4.1-mini",
-          messages: [
-            {
-              role: "system",
-              content:
-                "You are Academix AI, a friendly academic assistant. Help students organize assignments, break work into manageable steps, and create realistic study plans. Give clear, practical, student-friendly answers.",
-            },
-            {
-              role: "user",
-              content: prompt.trim(),
-            },
-          ],
-        }),
+          system_instruction: {
+            parts: [{
+              text: "You are Academix AI, a friendly academic assistant. Help students organize assignments, break work into manageable steps, create realistic study plans, and prepare for exams. Give clear, practical, student-friendly answers. Do not claim to modify or save tasks."
+            }]
+          },
+          contents: [{
+            role: "user",
+            parts: [{ text: prompt.trim() }]
+          }],
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 2048
+          }
+        })
       }
     );
 
@@ -52,31 +51,39 @@ router.post("/study-plan", async (req, res) => {
 
     if (!response.ok) {
       console.error(
-        "Vercel AI Gateway error:",
+        "Gemini API error:",
         response.status,
         data.error?.message || "Request failed"
       );
 
       return res.status(502).json({
-        message:
-          "The AI service could not generate a response. Please try again.",
+        message: "Gemini could not generate a response. Please try again."
       });
     }
 
-    const answer = data.choices?.[0]?.message?.content;
+    const answer = data.candidates?.[0]?.content?.parts
+      ?.map(part => part.text || "")
+      .join("")
+      .trim();
 
     if (!answer) {
+      console.error(
+        "Gemini returned no text:",
+        data.promptFeedback || data.candidates?.[0]?.finishReason
+      );
+
       return res.status(502).json({
-        message: "The AI service returned an empty response.",
+        message: "Gemini returned an empty response. Please try again."
       });
     }
 
     return res.json({ answer });
+
   } catch (error) {
     console.error("Academix AI error:", error.message);
 
     return res.status(502).json({
-      message: "Unable to reach the AI service. Please try again later.",
+      message: "Unable to reach Gemini. Please try again later."
     });
   }
 });
