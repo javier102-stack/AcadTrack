@@ -162,7 +162,6 @@ function App() {
       setPriority('Medium'); setTaskType('Assignment');
       setIsAddTaskOpen(false);
       fetchTasksData();
-      showToast(`✅ ${taskType} successfully added!`);
     } catch (error) { console.error('Error adding task:', error); }
   };
 
