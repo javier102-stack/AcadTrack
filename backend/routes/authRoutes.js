@@ -166,7 +166,7 @@ router.post("/login", async (req, res) => {
         message: "Invalid username/email or password.",
       });
     }
-
+    
     setAuthCookie(res, user._id);
 
     return res.json({
