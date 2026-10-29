@@ -14,7 +14,7 @@ export default function DashboardView({
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const response = await fetch('/api/auth/me', {
+        const response = await fetch('https://acadtrack-pkrg.onrender.com/api/auth/me', {
           method: 'GET',
           credentials: 'include', // 👈 Sends the HTTP-only cookie for authentication
         });
