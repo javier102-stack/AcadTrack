@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7FA8D6" />
+      <stop offset="50%" stop-color="#A8C6E7" />
+      <stop offset="100%" stop-color="#FFE08A" />
+    </linearGradient>
+  </defs>
+  <!-- Background rounded box -->
+  <rect x="4" y="4" width="56" height="56" rx="16" fill="url(#bgGrad)" />
+  <!-- Book Bookmark Icon (White) -->
+  <g transform="translate(16, 16) scale(1.33)" stroke="#ffffff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
+    <path d="M12 6v5l2-1.5L16 11V6" />
+  </g>
+</svg>
