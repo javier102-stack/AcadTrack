@@ -4,7 +4,7 @@ import axios from 'axios';
 import { BookOpen, BookBookmark } from 'lucide-react';
 import "./AIAssistant.css";
 
-const AI_URL = `${import.meta.api.VITE_API_URL}/api/ai/study-plan`;
+const AI_URL = 'http://localhost:5000/api/ai/study-plan';
 
 function AIAssistant({ theme, darkMode, tasks = [] }) {
   const [prompt, setPrompt] = useState('');
