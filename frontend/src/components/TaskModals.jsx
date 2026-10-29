@@ -59,28 +59,6 @@ export function AddTaskModal({
             />
           </div>
 
-                    <div className="form-field">
-            <label className="form-label" style={{ color: theme.subText }}>
-              Description
-            </label>
-            <textarea
-              placeholder="Notes..."
-              value={currentTask.description || ''}
-              onChange={(e) =>
-                setCurrentTask({
-                  ...currentTask,
-                  description: e.target.value
-                })
-              }
-              className="form-input form-textarea"
-              style={{
-                border: `1px solid ${theme.border}`,
-                background: theme.cardBg,
-                color: theme.text
-              }}
-            />
-          </div>
-
           <div className="form-grid-2">
             <div className="form-field">
               <label className="form-label" style={{ color: theme.subText }}>Due Date</label>
