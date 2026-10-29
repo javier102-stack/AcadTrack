@@ -118,7 +118,7 @@ export default function NotesView({
 
   const handleCreateNote = async () => {
     try {
-      const response = await fetch('/api/notes', {
+      const response = await fetch(`https://acadtrack-pkrg.onrender.com/api/notes/${id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
