@@ -10,7 +10,7 @@ export default function DashboardView({
   const [currentTime, setCurrentTime] = useState(new Date());
   const [user, setUser] = useState(null); // 👈 Added user state to fix the ReferenceError
 
-  const API_URL = import.meta.env.VITE_API_URL || 'https://acadtrack-pkrg.onrender.com';
+  const API_URL = 'https://acadtrack-pkrg.onrender.com';
 
   // Fetch logged-in user details from the backend
   useEffect(() => {
@@ -31,7 +31,7 @@ export default function DashboardView({
     };
 
     fetchUserProfile();
-  }, [API_URL]);
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
