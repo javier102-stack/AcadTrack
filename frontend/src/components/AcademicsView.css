@@ -505,4 +505,8 @@
   .filter-select {
     width: 100%;
   }
+
+  .search-input{
+    height: 15px;
+  }
 }
