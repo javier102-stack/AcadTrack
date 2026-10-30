@@ -58,3 +58,18 @@
 .app-view-container.standard-view {
   max-width: 1400px;
 }
+
+@media (max-width: 768px) {
+  /* Replace .main-content with whatever class name your parent wrapper uses */
+  .main-content, .app-container, .content-wrapper {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-view-container {
+    padding: 0px !important; /* Reduces padding edge-to-edge for mobile */
+  }
+}
