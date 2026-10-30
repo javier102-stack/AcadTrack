@@ -20,7 +20,7 @@ export default function DashboardView({
         });
         const data = await response.json();
         
-        if (response.ok) {
+        if (response.ok) {  
           setUser(data.user);
         }
       } catch (err) {

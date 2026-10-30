@@ -17,6 +17,7 @@ import {
   Maximize2,
   Minimize2,
   Save,
+  Menu,
 } from 'lucide-react';
 import './NoteView.css';
 
@@ -49,6 +50,7 @@ export default function NotesView({
   const [editingNoteId, setEditingNoteId] = useState(null);
   const [tempTitle, setTempTitle] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
 
   const activeNote = notes.find((note) => note._id === activeNoteId);
 
@@ -254,7 +256,6 @@ export default function NotesView({
         throw new Error(data.message || 'Failed to save note.');
       }
 
-      // Update only the note that was actually saved.
       if (data && data._id) {
         setNotes((previousNotes) =>
           previousNotes.map((note) =>
@@ -429,7 +430,6 @@ export default function NotesView({
 
     const noteId = activeNote._id;
 
-    // Capture the editor's latest content before saving.
     const currentNote =
       latestNotesRef.current.find((note) => note._id === noteId) ||
       activeNote;
@@ -451,14 +451,13 @@ export default function NotesView({
     setIsSaving(true);
 
     try {
-      // Wait for an earlier request for this note to finish.
       const previousSave = savePromisesRef.current.get(noteId);
 
       if (previousSave) {
         try {
           await previousSave;
         } catch {
-          // Proceed with the newest content after an earlier failure.
+          // Proceed with newest content
         }
       }
 
@@ -577,7 +576,6 @@ Use these tasks as context when relevant. Do not claim to change or save tasks.`
         throw new Error('The AI server did not return an answer.');
       }
 
-      // Escape AI text before inserting it into the HTML editor.
       const escapeHtml = (text) =>
         text.replace(/[&<>"']/g, (character) => {
           const entities = {
@@ -630,7 +628,7 @@ Use these tasks as context when relevant. Do not claim to change or save tasks.`
       }}
     >
       {!isFullScreen && (
-        <aside className={`notes-sidebar ${modeClass}`}>
+        <aside className={`notes-sidebar ${modeClass} ${!showMobileSidebar ? 'hidden-mobile' : ''}`}>
           <div className="notes-sidebar-header">
             <h3>My Notes</h3>
             <button
@@ -658,7 +656,10 @@ Use these tasks as context when relevant. Do not claim to change or save tasks.`
                   <div
                     key={note._id}
                     onClick={() => {
-                      if (!isEditing) setActiveNoteId(note._id);
+                      if (!isEditing) {
+                        setActiveNoteId(note._id);
+                        setShowMobileSidebar(false);
+                      }
                     }}
                     className={`notes-card ${
                       note._id === activeNoteId ? 'active' : ''
@@ -770,66 +771,76 @@ Use these tasks as context when relevant. Do not claim to change or save tasks.`
           className="notes-top-action-bar"
           style={{
             display: 'flex',
-            justifyContent: 'flex-end',
+            justifyContent: 'space-between',
+            alignItems: 'center',
             gap: '8px',
             marginBottom: '8px',
           }}
         >
-          {activeNote && (
+          <button
+            className="notes-mobile-toggle"
+            onClick={() => setShowMobileSidebar((prev) => !prev)}
+          >
+            <Menu size={16} /> Notes List
+          </button>
+
+          <div style={{ display: 'flex', gap: '8px', marginLeft: 'auto' }}>
+            {activeNote && (
+              <button
+                onClick={handleManualSave}
+                disabled={isSaving}
+                style={{
+                  background: isSaving
+                    ? '#10b981'
+                    : darkMode
+                      ? '#1e293b'
+                      : '#f8fafc',
+                  border: '1px solid #cbd5e1',
+                  borderRadius: '6px',
+                  padding: '6px 14px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  cursor: isSaving ? 'wait' : 'pointer',
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  color: isSaving
+                    ? '#ffffff'
+                    : darkMode
+                      ? '#f8fafc'
+                      : '#334155',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                <Save size={15} />
+                {isSaving ? 'Saving...' : 'Save Note'}
+              </button>
+            )}
+
             <button
-              onClick={handleManualSave}
-              disabled={isSaving}
+              onClick={() => setIsFullScreen((current) => !current)}
               style={{
-                background: isSaving
-                  ? '#10b981'
-                  : darkMode
-                    ? '#1e293b'
-                    : '#f8fafc',
+                background: darkMode ? '#1e293b' : '#f8fafc',
                 border: '1px solid #cbd5e1',
                 borderRadius: '6px',
-                padding: '6px 14px',
+                padding: '6px 12px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
-                cursor: isSaving ? 'wait' : 'pointer',
+                cursor: 'pointer',
                 fontSize: '0.8rem',
                 fontWeight: 600,
-                color: isSaving
-                  ? '#ffffff'
-                  : darkMode
-                    ? '#f8fafc'
-                    : '#334155',
-                transition: 'all 0.2s ease',
+                color: darkMode ? '#f8fafc' : '#334155',
               }}
             >
-              <Save size={15} />
-              {isSaving ? 'Saving...' : 'Save Note'}
+              {isFullScreen ? (
+                <Minimize2 size={16} />
+              ) : (
+                <Maximize2 size={16} />
+              )}
+              {isFullScreen ? 'Exit Full Screen' : 'Full Screen'}
             </button>
-          )}
-
-          <button
-            onClick={() => setIsFullScreen((current) => !current)}
-            style={{
-              background: darkMode ? '#1e293b' : '#f8fafc',
-              border: '1px solid #cbd5e1',
-              borderRadius: '6px',
-              padding: '6px 12px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              cursor: 'pointer',
-              fontSize: '0.8rem',
-              fontWeight: 600,
-              color: darkMode ? '#f8fafc' : '#334155',
-            }}
-          >
-            {isFullScreen ? (
-              <Minimize2 size={16} />
-            ) : (
-              <Maximize2 size={16} />
-            )}
-            {isFullScreen ? 'Exit Full Screen' : 'Full Screen'}
-          </button>
+          </div>
         </div>
 
         <div className={`notes-timer-bar ${modeClass}`}>

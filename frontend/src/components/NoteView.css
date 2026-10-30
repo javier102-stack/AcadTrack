@@ -8,6 +8,22 @@
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   margin-top: 10px;
+  position: relative;
+}
+
+/* Mobile Sidebar Toggle Button */
+.notes-mobile-toggle {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  background: #3b82f6;
+  color: #ffffff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
 }
 
 /* Sidebar Styles */
@@ -19,6 +35,7 @@
   flex-direction: column;
   padding: 16px;
   background-color: rgba(255, 255, 255, 0.5);
+  transition: all 0.3s ease;
 }
 
 .notes-sidebar.dark {
@@ -39,10 +56,6 @@
   margin: 0;
   font-size: 1.1rem;
   font-weight: 700;
-}
-
-.notes-title-input{
-  color:#0f172a;
 }
 
 .notes-add-btn {
@@ -152,8 +165,9 @@
   display: flex;
   flex-direction: column;
   padding: 24px;
-  overflow-y: auto;
-  gap: 16px;
+  overflow: hidden;
+  min-height: 0;
+  gap: 12px;
 }
 
 /* Timer Bar */
@@ -165,6 +179,8 @@
   border-radius: 8px;
   background: rgba(241, 245, 249, 0.6);
   border: 1px solid rgba(226, 232, 240, 0.8);
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .notes-timer-bar.dark {
@@ -190,6 +206,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .timer-btn {
@@ -247,6 +264,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+  flex-wrap: wrap;
 }
 
 .notes-title-input {
@@ -257,6 +275,7 @@
   outline: none;
   background: transparent;
   padding: 4px 0;
+  min-width: 180px;
 }
 
 .notes-title-input.dark {
@@ -267,6 +286,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  flex-wrap: wrap;
 }
 
 .notes-task-select {
@@ -277,6 +297,7 @@
   font-size: 0.85rem;
   outline: none;
   color: black;
+  max-width: 100%;
 }
 
 .notes-task-select.dark {
@@ -294,6 +315,7 @@
   border-radius: 8px;
   background: rgba(241, 245, 249, 0.6);
   border: 1px solid rgba(226, 232, 240, 0.8);
+  flex-wrap: wrap;
 }
 
 .notes-toolbar.dark {
@@ -350,7 +372,7 @@
 /* Content Editable Area */
 .notes-content-editable {
   flex: 1;
-  min-height: 300px;
+  min-height: 250px;
   padding: 16px;
   border-radius: 8px;
   border: 1px solid rgba(226, 232, 240, 0.8);
@@ -359,7 +381,12 @@
   line-height: 1.6;
   background: #ffffff;
   
-  /* 👇 Add these two lines to force left alignment and left-to-right writing */
+  overflow-y: auto !important; 
+  overflow-x: hidden;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+  
   text-align: left !important;
   direction: ltr !important;
   unicode-bidi: embed;
@@ -369,8 +396,6 @@
   background: #0f172a;
   border-color: #334155;
   color: #f8fafc;
-  text-align: left !important;
-  direction: ltr !important;
 }
 
 .notes-no-selection {
@@ -380,6 +405,8 @@
   height: 100%;
   color: #94a3b8;
   font-size: 1rem;
+  padding: 20px;
+  text-align: center;
 }
 
 /* Full Screen Mode Adjustment */
@@ -398,46 +425,6 @@
   overflow: hidden;
 }
 
-.notes-editor-area {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 24px;
-  overflow: hidden;
-  min-height: 0; /* 👈 Crucial flexbox reset so children respect boundaries */
-  gap: 12px;
-}
-
-.notes-content-editable {
-  flex: 1; /* 👈 Makes the text box expand to fill available space inside the square */
-  min-height: 0;
-  padding: 16px;
-  border-radius: 8px;
-  border: 1px solid rgba(226, 232, 240, 0.8);
-  outline: none;
-  font-size: 1rem;
-  line-height: 1.6;
-  background: #ffffff;
-  
-  /* 👈 Text wrapping and internal scroll locks */
-  overflow-y: auto !important; 
-  overflow-x: hidden;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  white-space: pre-wrap;
-  
-  text-align: left !important;
-  direction: ltr !important;
-  unicode-bidi: embed;
-}
-
-.notes-content-editable.dark {
-  background: #0f172a;
-  border-color: #334155;
-  color: #f8fafc;
-}
-
-/* Sidebar Edit Button Styles */
 .notes-edit-btn {
   background: transparent;
   border: none;
@@ -455,3 +442,61 @@
   background-color: rgba(59, 130, 246, 0.1);
 }
 
+/* ==========================================================================
+   MOBILE & SMALL SCREEN RESPONSIVENESS (<= 768px)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .notes-container {
+    flex-direction: column;
+    min-height: calc(100vh - 80px);
+  }
+
+  .notes-mobile-toggle {
+    display: flex;
+  }
+
+  /* Collapsible / Stacked Sidebar */
+  .notes-sidebar {
+    width: 100%;
+    min-width: 100%;
+    max-height: 250px;
+    border-right: none;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+  }
+
+  .notes-sidebar.hidden-mobile {
+    display: none;
+  }
+
+  .notes-editor-area {
+    padding: 12px;
+  }
+
+  .notes-title-input {
+    font-size: 1.25rem;
+  }
+
+  .notes-timer-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .notes-timer-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .timer-custom-wrapper {
+    margin-left: 0;
+  }
+
+  .notes-toolbar {
+    justify-content: flex-start;
+  }
+
+  .notes-ai-write-btn {
+    margin-left: 0;
+    width: 100%;
+    justify-content: center;
+  }
+}
