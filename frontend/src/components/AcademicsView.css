@@ -506,7 +506,7 @@
     width: 100%;
   }
 
-  .search-box{
-    height: 15px;
+  .search-input{
+    height: 15px !important;
   }
 }
